@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/31/hexo-anzhiyu-series/04-theme-upgrade-patch/"><!-- Primary Meta Tags --><title>安知鱼主题升级与 Patch 归档策略</title><meta name="description" content="详解 anzhiyu 主题的版本升级流程、patch-package 定制补丁的生成与归档策略，避免升级后定制丢失。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/31/hexo-anzhiyu-series/04-theme-upgrade-patch/"><meta property="og:title" content="安知鱼主题升级与 Patch 归档策略"><meta property="og:description" content="详解 anzhiyu 主题的版本升级流程、patch-package 定制补丁的生成与归档策略，避免升级后定制丢失。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>安知鱼主题升级与 Patch 归档策略</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-31T10:00:00.000Z" data-astro-cid-q4eo6rhm>2026-07-31</time></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="一项目架构">一、项目架构</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>博客源码 (orchidsd/hexo-blog)</span></span>
+<span class="line"><span>  ├── _config.anzhiyu.yml      ← 主题配置（51.LA、AI摘要、PWA等）</span></span>
+<span class="line"><span>  ├── source/                   ← 文章、页面、自定义资源</span></span>
+<span class="line"><span>  │   ├── _posts/               ← 博客文章</span></span>
+<span class="line"><span>  │   ├── _data/                ← 友链、相册、关于我数据</span></span>
+<span class="line"><span>  │   ├── css/custom.css        ← 背景模糊去除等样式覆盖</span></span>
+<span class="line"><span>  │   ├── manifest.json         ← PWA Web 清单</span></span>
+<span class="line"><span>  │   ├── img/siteicon/         ← PWA 图标</span></span>
+<span class="line"><span>  │   └── copyright/, pixiv/    ← 自定义页面</span></span>
+<span class="line"><span>  ├── themes/anzhiyu/           ← 安知鱼主题源码（直接下载，非子模块）</span></span>
+<span class="line"><span>  ├── patches/                  ← 自定义补丁存档</span></span>
+<span class="line"><span>  │   ├── anzhiyu-customizations.patch</span></span>
+<span class="line"><span>  │   └── upgrade-theme.sh</span></span>
+<span class="line"><span>  └── hexo-offline.config.cjs   ← Workbox PWA 缓存规则</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>         │ hexo d</span></span>
+<span class="line"><span>         ▼</span></span>
+<span class="line"><span>orchidsd/orchidsd.github.io (部署产物 /public)</span></span>
+<span class="line"><span>         │</span></span>
+<span class="line"><span>         ▼</span></span>
+<span class="line"><span>Cloudflare Workers → weiguang.eu.org / blog.weiguang.eu.org</span></span></code></pre>
+<h2 id="二快速升级交互式脚本">二、快速升级（交互式脚本）</h2>
+<p>Linux/macOS 可直接运行升级脚本：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">bash</span><span style="color:#9ECBFF"> patches/upgrade-theme.sh</span></span></code></pre>
+<p>脚本会：</p>
+<ol>
+<li>获取远程标签列表</li>
+<li>让你输入目标版本号（如 <code>1.8.0</code>）</li>
+<li>自动下载解压新版本到 <code>themes/anzhiyu/</code></li>
+<li>自动应用 <code>patches/anzhiyu-customizations.patch</code></li>
+<li>提示提交</li>
+</ol>
+<p>Windows 环境请按 §三 手动操作。</p>
+<h2 id="三手动升级全流程v100--v171">三、手动升级全流程（v1.0.0 → v1.7.1）</h2>
+<h3 id="31-准备工作">3.1 准备工作</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 备份当前主题（保险）</span></span>
+<span class="line"><span style="color:#B392F0">cp</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> themes/anzhiyu</span><span style="color:#9ECBFF"> themes/anzhiyu.bak</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 下载最新版</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -L</span><span style="color:#9ECBFF"> https://github.com/anzhiyu-c/hexo-theme-anzhiyu/archive/refs/tags/1.7.1.zip</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> anzhiyu-1.7.1.zip</span></span>
+<span class="line"><span style="color:#6A737D"># 解压到 themes/anzhiyu/</span></span></code></pre>
+<h3 id="32-替换主题文件">3.2 替换主题文件</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 删除旧版，放入新版</span></span>
+<span class="line"><span style="color:#B392F0">rm</span><span style="color:#79B8FF"> -rf</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span>
+<span class="line"><span style="color:#B392F0">unzip</span><span style="color:#9ECBFF"> anzhiyu-1.7.1.zip</span><span style="color:#79B8FF"> -d</span><span style="color:#9ECBFF"> /tmp/anzhiyu-extracted</span></span>
+<span class="line"><span style="color:#B392F0">mv</span><span style="color:#9ECBFF"> /tmp/anzhiyu-extracted/hexo-theme-anzhiyu-1.7.1</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span></code></pre>
+<p>此时 <code>themes/anzhiyu/</code> 是干净的官方 1.7.1，<strong>所有自定义全部丢失</strong>。</p>
+<h3 id="33-应用自定义-patch">3.3 应用自定义 Patch</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> apply</span><span style="color:#9ECBFF"> patches/anzhiyu-customizations.patch</span></span></code></pre>
+<p>如果成功，自定义全部恢复。如果冲突：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> apply</span><span style="color:#79B8FF"> --reject</span><span style="color:#9ECBFF"> patches/anzhiyu-customizations.patch</span></span>
+<span class="line"><span style="color:#6A737D"># 查看 .rej 文件手动合并</span></span></code></pre>
+<h3 id="34-自定义修改清单6个文件">3.4 自定义修改清单（6个文件）</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>修改内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layout/includes/anzhiyu/ai-info.pug</code></td>
+<td>添加 <code>else if mode == "openai"</code> 标签</td>
+</tr>
+<tr>
+<td><code>layout/includes/header/post-info.pug</code></td>
+<td>移除 <code>!comments.lazyload</code> 守卫，始终渲染阅读量/评论数</td>
+</tr>
+<tr>
+<td><code>layout/includes/third-party/comments/waline.pug</code></td>
+<td>添加 reaction/emoji/locale/pageSize；移除 <code>lazyload</code> 对 pageview/comment 的禁用</td>
+</tr>
+<tr>
+<td><code>scripts/events/merge_config.js</code></td>
+<td>添加 openai 默认配置块</td>
+</tr>
+<tr>
+<td><code>source/js/anzhiyu/ai_abstract.js</code></td>
+<td>添加完整 OpenAI 模式（含缓存、刷新清缓存）</td>
+</tr>
+<tr>
+<td><code>source/js/main.js</code></td>
+<td>statistics51aInit 添加 LA51 配置守卫</td>
+</tr>
+</tbody>
+</table>
+<h3 id="35-更新-patch-存档">3.5 更新 Patch 存档</h3>
+<blockquote>
+<p><strong>注意</strong>：Windows 上 <code>git diff -- themes/anzhiyu/ &gt; patch</code> 会输出 UTF-16LE（含 BOM），git 无法识别。必须用以下方法之一：</p>
+</blockquote>
+<p><strong>方法 A（Git Bash / WSL）：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> diff</span><span style="color:#79B8FF"> --</span><span style="color:#9ECBFF"> themes/anzhiyu/</span><span style="color:#F97583"> &gt;</span><span style="color:#9ECBFF"> patches/anzhiyu-customizations.patch</span></span></code></pre>
+<p><strong>方法 B（PowerShell，推荐）：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#E1E4E8">.\patches\generate</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">patch.ps1</span></span></code></pre>
+<p>脚本会自动拉取干净版 → 建临时仓库 → 生成 UTF-8 无 BOM 的 patch。</p>
+<h2 id="四git-提交与-tag">四、Git 提交与 Tag</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -A</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "chore: upgrade anzhiyu theme to v1.7.1, add custom patches"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> tag</span><span style="color:#9ECBFF"> v1.1.0</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> main</span><span style="color:#79B8FF"> --tags</span></span></code></pre>
+<h2 id="五未来升级步骤">五、未来升级步骤</h2>
+<p>快速方式（Linux/macOS）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">bash</span><span style="color:#9ECBFF"> patches/upgrade-theme.sh</span></span></code></pre>
+<p>手动方式（跨平台）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. 备份当前修改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -A</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "backup before upgrade"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. 下载新版替换</span></span>
+<span class="line"><span style="color:#B392F0">rm</span><span style="color:#79B8FF"> -rf</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span>
+<span class="line"><span style="color:#6A737D"># 下载解压新版到 themes/anzhiyu/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. 应用 patch</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> apply</span><span style="color:#9ECBFF"> patches/anzhiyu-customizations.patch</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. 如冲突，手动合并 .rej 文件</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> apply</span><span style="color:#79B8FF"> --reject</span><span style="color:#9ECBFF"> patches/anzhiyu-customizations.patch</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 5. 提交</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -A</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "chore: upgrade anzhiyu to vX.X.X"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> tag</span><span style="color:#9ECBFF"> vX.X.X</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> main</span><span style="color:#79B8FF"> --tags</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 6. 构建部署</span></span>
+<span class="line"><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> cl</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> ge</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> d</span></span></code></pre>
+<blockquote>
+<p>新增自定义时：修改主题文件 → 运行 <code>.\patches\generate-patch.ps1</code> 重新生成 patch 存档。</p>
+</blockquote>
+<h2 id="七涉及-git-命令详解">七、涉及 Git 命令详解</h2>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>git apply file.patch</code></td>
+<td>应用 patch</td>
+</tr>
+<tr>
+<td><code>git apply --reject file.patch</code></td>
+<td>模糊应用，冲突部分生成 .rej</td>
+</tr>
+<tr>
+<td><code>git diff --cached</code></td>
+<td>查看已暂存的变更</td>
+</tr>
+<tr>
+<td><code>git diff --stat</code></td>
+<td>查看修改文件统计</td>
+</tr>
+<tr>
+<td><code>git add -A</code></td>
+<td>暂存所有变更</td>
+</tr>
+<tr>
+<td><code>git commit -m "msg"</code></td>
+<td>提交</td>
+</tr>
+<tr>
+<td><code>git tag v1.1.0</code></td>
+<td>打标签</td>
+</tr>
+<tr>
+<td><code>git push origin main --tags</code></td>
+<td>推送分支和所有标签</td>
+</tr>
+</tbody>
+</table>
+<h2 id="八关键注意事项">八、关键注意事项</h2>
+<ol>
+<li><strong>Patch 编码</strong>：Windows PowerShell 的 <code>&gt;</code> 默认输出 UTF-16LE（含 BOM），git 无法识别。用 <code>patches/generate-patch.ps1</code> 可自动处理。</li>
+<li><strong>Patch 基准</strong>：patch 必须基于<strong>干净官方版</strong>生成，而非对比旧版。<code>generate-patch.ps1</code> 自动拉取干净版处理。</li>
+<li><strong>新增自定义</strong>：改完主题文件后运行 <code>.\patches\generate-patch.ps1</code> 重新生成 patch。</li>
+</ol>
+<h2 id="九本次升级变更统计">九、本次升级变更统计</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>72 files changed, 8012 insertions(+), 559 deletions(-)</span></span></code></pre>
+<p>其中自定义 patch 6 个文件，+118/-13 行：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>变更统计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai-info.pug</code></td>
+<td>+2 行（openai 标签）</td>
+</tr>
+<tr>
+<td><code>post-info.pug</code></td>
+<td>+4/-4（移除 lazyload 守卫）</td>
+</tr>
+<tr>
+<td><code>waline.pug</code></td>
+<td>+10/-6（reaction/emoji/去守卫）</td>
+</tr>
+<tr>
+<td><code>merge_config.js</code></td>
+<td>+8 行（openai 默认配置）</td>
+</tr>
+<tr>
+<td><code>ai_abstract.js</code></td>
+<td>+105/-2（OpenAI 模式）</td>
+</tr>
+<tr>
+<td><code>main.js</code></td>
+<td>+2 行（LA51 守卫）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="十相关文件">十、相关文件</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patches/anzhiyu-customizations.patch</code></td>
+<td>自定义补丁（未来升级用）</td>
+</tr>
+<tr>
+<td><code>patches/upgrade-theme.sh</code></td>
+<td>交互式升级脚本（Linux/macOS）</td>
+</tr>
+<tr>
+<td><code>patches/generate-patch.ps1</code></td>
+<td>重新生成 patch（Windows）</td>
+</tr>
+</tbody>
+</table>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/31/friend-circle-series/06-troubleshooting/" data-astro-cid-q4eo6rhm>← 踩坑与问题排查实录</a><a class="next" href="/2026/08/09/hexo-anzhiyu-series/07-toc-style/" data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（七）：侧边栏目录仿 anheyu 风格魔改实录 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

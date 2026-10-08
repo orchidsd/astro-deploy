@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/writing-tutorial-methodology/"><!-- Primary Meta Tags --><title>优质教程博文怎么写？从 web.dev、DigitalOcean、freeCodeCamp 提炼的编写结构与流程</title><meta name="description" content="拆解 web.dev、DigitalOcean、freeCodeCamp 三家的代表性教程，提炼出「悬念开头、目标声明、Step+预期输出、检查点、FAQ、延伸阅读」六大结构件与可落地的编写流程，附本站脚手架模板。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/writing-tutorial-methodology/"><meta property="og:title" content="优质教程博文怎么写？从 web.dev、DigitalOcean、freeCodeCamp 提炼的编写结构与流程"><meta property="og:description" content="拆解 web.dev、DigitalOcean、freeCodeCamp 三家的代表性教程，提炼出「悬念开头、目标声明、Step+预期输出、检查点、FAQ、延伸阅读」六大结构件与可落地的编写流程，附本站脚手架模板。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>优质教程博文怎么写？从 web.dev、DigitalOcean、freeCodeCamp 提炼的编写结构与流程</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T10:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/经验分享/" data-astro-cid-q4eo6rhm>经验分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头为什么你的教程看的人多照着做的人少">开头：为什么你的教程「看的人多，照着做的人少」？</h2>
+<p>写技术教程最挫败的瞬间：文章收藏过千，评论区却全是「第 3 步就失败了」。不是读者笨，是文章结构没有服务「照着做」——大段原理铺垫、步骤之间没有预期输出、报错没有排查指引，读者走到一半就迷路了。</p>
+<p>我研究了三家公认「教程质量天花板」的站点——web.dev（Google 官方）、DigitalOcean（云厂商社区）、freeCodeCamp（全球最大免费编程社区），拆解它们的代表性教程（CSS Box Model / PostgreSQL 安装 / ToC 写作规范），提炼出可复制的<strong>结构件</strong>与<strong>流程</strong>，并落地成本站 <code>scaffolds/tutorial.md</code> 脚手架。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：理解六种结构件的作用与写法、学会按「钩子 → 目标 → Step → 检查点 → FAQ → 延伸」编排一篇教程，并直接使用本站的教程脚手架开写。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 有想写的技术主题（哪怕只有一个函数/一次踩坑）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 本站 <code>scaffolds/tutorial.md</code> 脚手架已入库（<code>hexo new tutorial "标题"</code> 使用）</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>三家教程站的结构共性</li>
+<li>六大结构件的写作要点</li>
+<li>从大纲到发布的编写流程</li>
+</ol>
+<hr>
+<h2 id="step-1理解三种教程形态">Step 1：理解三种教程「形态」</h2>
+<blockquote>
+<p>目的：先给文章定形。做完这步知道自己的主题该用哪种形态。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>形态</th>
+<th>代表</th>
+<th>特点</th>
+<th>适合主题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>课程型</strong></td>
+<td>web.dev Learn CSS: Box Model</td>
+<td>概念模块分节 + 互动 demo + 每节测验</td>
+<td>概念/原理类</td>
+</tr>
+<tr>
+<td><strong>步骤型</strong></td>
+<td>DigitalOcean How To Install PostgreSQL</td>
+<td>Step 1~N 严格编号 + 命令 + 预期输出</td>
+<td>安装/配置类</td>
+</tr>
+<tr>
+<td><strong>实战型</strong></td>
+<td>freeCodeCamp 写作规范</td>
+<td>ToC + Step #n + 截图 + Conclusion</td>
+<td>带完整成品的小项目</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>判断方法：你的读者是要「理解」还是要「做完」？理解→课程型，做完→步骤型，两者都要→实战型。</p>
+</blockquote>
+<hr>
+<h2 id="step-2开头写钩子13-行">Step 2：开头写钩子（1~3 行）</h2>
+<blockquote>
+<p>目的：制造「预期与现实的矛盾」，让读者产生「为什么？」的好奇。做完这步读者决定要不要读。</p>
+</blockquote>
+<p><strong>三种钩子模板：</strong></p>
+<table>
+<thead>
+<tr>
+<th>模板</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>矛盾代码</strong></td>
+<td>「设了 width:100px，实际渲染却是 142px，为什么？」</td>
+</tr>
+<tr>
+<td><strong>痛点共鸣</strong></td>
+<td>「翻页就断歌，是博客播放器的原罪。」</td>
+</tr>
+<tr>
+<td><strong>反直觉结论</strong></td>
+<td>「歌词不是没有，是没对上——APlayer 的异步加载天生慢半拍。」</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>写不好钩子 = 文章没人读。这是唯一一个「值得花 10 分钟写 3 行」的部分。</p>
+</blockquote>
+<hr>
+<h2 id="step-3写目标声明--前置条件">Step 3：写目标声明 + 前置条件</h2>
+<blockquote>
+<p>目的：读者自评「该不该读、能不能跟上」。做完这步过滤无效流量。</p>
+</blockquote>
+<p><strong>结构：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#E1E4E8">本文带你完成：XXXX（一个明确成果）。</span></span>
+<span class="line"><span style="color:#E1E4E8;font-weight:bold">**前置条件：**</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [ ] 已安装 X（未安装参考 [</span><span style="color:#DBEDFF;text-decoration:underline">教程</span><span style="color:#E1E4E8">](</span><span style="color:#E1E4E8;text-decoration:underline">链接</span><span style="color:#E1E4E8">)）</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [ ] 已配置 Y</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [ ] 预计耗时 30 分钟</span></span>
+<span class="line"><span style="color:#E1E4E8;font-weight:bold">**你将学会：**</span></span>
+<span class="line"><span style="color:#FFAB70">1.</span><span style="color:#E1E4E8"> X</span></span>
+<span class="line"><span style="color:#FFAB70">2.</span><span style="color:#E1E4E8"> Y</span></span></code></pre>
+<hr>
+<h2 id="step-4step-用操作--预期输出--排查三明治">Step 4：Step 用「操作 + 预期输出 + 排查」三明治</h2>
+<blockquote>
+<p>目的：每一步都可验证、可复现、可自救。做完这步文章的核心骨架成型。</p>
+</blockquote>
+<p><strong>每步格式：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#79B8FF;font-weight:bold">## Step N：标题（动词开头）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">&gt; 目的：做这一步能看到什么效果（可验证的预期）。</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8;font-weight:bold">**操作：**</span><span style="color:#E1E4E8">（命令/代码，可直接复制）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8;font-weight:bold">**预期输出：**</span><span style="color:#E1E4E8">（粘贴你真实跑出来的输出，读者照此核对）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">&gt; ⚠️ 报错排查：如果出现 X 错误，通常是 A/B 导致，检查 C。</span></span></code></pre>
+<p><strong>要点：</strong></p>
+<ul>
+<li>预期输出<strong>必须写</strong>：DigitalOcean 每步都贴真实输出，读者对得上才敢继续</li>
+<li>命令块前加 <code>sudo</code>/环境提示：读者环境 ≠ 你的环境</li>
+<li>报错排查放当步（不是文末）：卡住的人不会读到文末</li>
+</ul>
+<hr>
+<h2 id="step-5加检查点--faq">Step 5：加检查点 + FAQ</h2>
+<blockquote>
+<p>目的：给读者一个「完成自测清单」和「失败对照表」。做完这步文章闭环。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#79B8FF;font-weight:bold">## 检查点：验证整体效果</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [ ] 页面出现 X 效果</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [ ] 控制台无报错</span></span>
+<span class="line"><span style="color:#E1E4E8">（全部勾选通过 = 教程完成）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF;font-weight:bold">## 常见问题（FAQ）</span></span>
+<span class="line"><span style="color:#E1E4E8">| 问题 | 原因 | 解决 |</span></span>
+<span class="line"><span style="color:#E1E4E8">|------|------|------|</span></span></code></pre>
+<blockquote>
+<p>web.dev 每节末尾的「Check your understanding」就是这个思路——读者自测，作者免答疑。</p>
+</blockquote>
+<hr>
+<h2 id="step-6总结--延伸阅读">Step 6：总结 + 延伸阅读</h2>
+<blockquote>
+<p>目的：回顾核心要点 + 引流系列下一篇。做完这步文章形成「系列闭环」。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#79B8FF;font-weight:bold">## 总结</span></span>
+<span class="line"><span style="color:#E1E4E8">本文带你完成了 X。核心要点：1. ... 2. ...</span></span>
+<span class="line"><span style="color:#E1E4E8;font-weight:bold">**延伸阅读：**</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [</span><span style="color:#DBEDFF;text-decoration:underline">上一篇：《XXX》</span><span style="color:#E1E4E8">](</span><span style="color:#E1E4E8;text-decoration:underline">链接</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [</span><span style="color:#DBEDFF;text-decoration:underline">下一篇：《XXX》</span><span style="color:#E1E4E8">](</span><span style="color:#E1E4E8;text-decoration:underline">链接</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#FFAB70">-</span><span style="color:#E1E4E8"> [</span><span style="color:#DBEDFF;text-decoration:underline">官方文档</span><span style="color:#E1E4E8">](</span><span style="color:#E1E4E8;text-decoration:underline">链接</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<blockquote>
+<p>系列文章之间<strong>必须互链</strong>（freeCodeCamp 规范里 ToC + Conclusion + 下一篇引导是写作模板的一部分）。</p>
+</blockquote>
+<hr>
+<h2 id="编写流程从-0-到发布">编写流程（从 0 到发布）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>① 定形态：课程型 / 步骤型 / 实战型</span></span>
+<span class="line"><span>② 写钩子：矛盾代码 / 痛点 / 反直觉结论（3 行）</span></span>
+<span class="line"><span>③ 列大纲：目标 → 前置 → Step 骨架 → 检查点 → FAQ → 总结</span></span>
+<span class="line"><span>④ 按 Step 填内容：操作 → 真实预期输出 → 排查</span></span>
+<span class="line"><span>⑤ 自查：每步预期输出是否可验证？无 404 链接？（本仓库有 CI 死链检查兜底）</span></span>
+<span class="line"><span>⑥ 发布：hexo new tutorial "标题" → 填写 → push</span></span></code></pre>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>用下面清单检查你写出的文章。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 开头 3 行内有钩子（矛盾/痛点/反直觉）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 目标 + 前置条件 + 你将学会 三件套齐全</li>
+<li class="task-list-item"><input type="checkbox" disabled> 每个 Step 都有「预期输出」</li>
+<li class="task-list-item"><input type="checkbox" disabled> 有检查点勾选清单</li>
+<li class="task-list-item"><input type="checkbox" disabled> FAQ 表覆盖至少 3 个高频报错</li>
+<li class="task-list-item"><input type="checkbox" disabled> 延伸阅读互链了系列上下篇</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写一半写不下去</td>
+<td>大纲没定</td>
+<td>先列 Step 骨架再填肉</td>
+</tr>
+<tr>
+<td>预期输出写不出</td>
+<td>没实际跑过</td>
+<td>先做一遍再写——教程必须自己验证过</td>
+</tr>
+<tr>
+<td>读者照做还是失败</td>
+<td>缺前置条件/环境假设</td>
+<td>前置条件列全 + 报错排查放当步</td>
+</tr>
+<tr>
+<td>篇幅太长没人读完</td>
+<td>形态选错</td>
+<td>概念拆系列，一篇一主题</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>教程不是「知识搬运」，是「带读者走完一条路」。核心要点：</p>
+<ol>
+<li><strong>结构服务目标</strong>：读者要「做完」→ Step 三明治；要「理解」→ 概念 + 测验</li>
+<li><strong>预期输出是灵魂</strong>：没有它，读者无法确认自己走对了</li>
+<li><strong>钩子决定流量</strong>：3 行写不好，后面全白写</li>
+<li><strong>工具化落地</strong>：本站 <code>scaffolds/tutorial.md</code> 已内置全部结构件，<code>hexo new tutorial</code> 即用</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://github.com/orchidsd/hexo-blog/blob/main/scaffolds/tutorial.md">本站教程脚手架 scaffolds/tutorial.md</a></li>
+<li><a href="https://web.dev/learn/css/box-model">web.dev Learn CSS</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials">DigitalOcean Community Tutorials</a></li>
+<li><a href="https://www.freecodecamp.org/news/tag/writing/rss">freeCodeCamp 写作规范（RSS 摘录）</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/waline-series/02-worker-proxy/" data-astro-cid-q4eo6rhm>← Waline 评论图片上传系列（二）：Cloudflare Worker 代理上传——Token 移出前端与安全防护</a><a class="next" href="/2026/08/12/blog-maintenance-ci-comments/" data-astro-cid-q4eo6rhm>博客工程维护复盘：CI 收敛与评论图片放大双 Bug 修复实录 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

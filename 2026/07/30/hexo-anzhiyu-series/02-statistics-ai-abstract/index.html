@@ -1,0 +1,413 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/30/hexo-anzhiyu-series/02-statistics-ai-abstract/"><!-- Primary Meta Tags --><title>Hexo anzhiyu 主题深度定制系列（二）：51.LA 双 SDK 统计与 AI 摘要三模式</title><meta name="description" content="详解 51.LA 流量统计+雀灵性能监控双 SDK 动态注入实现，以及文章顶部 AI 摘要的 local/tianli/openai 三模式切换、缓存机制与自动化配置。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/30/hexo-anzhiyu-series/02-statistics-ai-abstract/"><meta property="og:title" content="Hexo anzhiyu 主题深度定制系列（二）：51.LA 双 SDK 统计与 AI 摘要三模式"><meta property="og:description" content="详解 51.LA 流量统计+雀灵性能监控双 SDK 动态注入实现，以及文章顶部 AI 摘要的 local/tianli/openai 三模式切换、缓存机制与自动化配置。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（二）：51.LA 双 SDK 统计与 AI 摘要三模式</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-30T02:30:00.000Z" data-astro-cid-q4eo6rhm>2026-07-30</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="前言">前言</h2>
+<p>本篇聚焦两个「用户感知最强」的功能：<strong>统计分析</strong>与 <strong>AI 摘要</strong>。前者决定你能不能看懂流量，后者决定读者能不能 3 秒读懂文章。</p>
+<hr>
+<h2 id="1-51la-双-sdk流量统计--性能监控">1. 51.LA 双 SDK：流量统计 + 性能监控</h2>
+<h3 id="11-为什么要双-sdk">1.1 为什么要双 SDK？</h3>
+<table>
+<thead>
+<tr>
+<th>SDK</th>
+<th>采集指标</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>js-sdk-pro</strong> (流量)</td>
+<td>PV/UV、来源、地域、设备、停留时长、热力图</td>
+<td>运营看板、内容选题</td>
+</tr>
+<tr>
+<td><strong>perf/js-sdk-perf</strong> (雀灵)</td>
+<td>FCP/LCP/CLS/FID、JS 错误、资源加载耗时、慢接口</td>
+<td>前端性能优化、异常告警</td>
+</tr>
+</tbody>
+</table>
+<p>两者<strong>独立初始化、互不干扰</strong>，同一 <code>ck</code> 可复用。</p>
+<h3 id="12-配置入口_configanzhiyuyml">1.2 配置入口（<code>_config.anzhiyu.yml</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">LA</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  enable</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span></span>
+<span class="line"><span style="color:#85E89D">  ck</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">3QhmqTheuIeNJHd9</span><span style="color:#6A737D">                    # 站点 ID = ck</span></span>
+<span class="line"><span style="color:#85E89D">  LingQueMonitorID</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">3QhhHg4cYX5by8v8</span><span style="color:#6A737D">      # 雀灵监控 ID（单独申请）</span></span></code></pre>
+<h3 id="13-动态注入实现themesanzhiyusourcejsanzhiyumainjs">1.3 动态注入实现（<code>themes/anzhiyu/source/js/anzhiyu/main.js</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#6A737D">// 入口：pjax:complete / 首次加载 时调用</span></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> statistics51aInit</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> LA51</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> GLOBAL_CONFIG</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">LA51</span><span style="color:#F97583"> ||</span><span style="color:#F97583"> !</span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">.ck) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 通用脚本加载器（Promise 化、去重、charset、id、crossorigin）</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#B392F0"> loadScript</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">url</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">charset</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "UTF-8"</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">crossorigin</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">id</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> new</span><span style="color:#79B8FF"> Promise</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">resolve</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">reject</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(id)) </span><span style="color:#F97583">return</span><span style="color:#B392F0"> resolve</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// 去重</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#79B8FF"> script</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"script"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">      script.src </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> url;</span></span>
+<span class="line"><span style="color:#E1E4E8">      script.async </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (id) script.</span><span style="color:#B392F0">setAttribute</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"id"</span><span style="color:#E1E4E8">, id);</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (charset) script.</span><span style="color:#B392F0">setAttribute</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"charset"</span><span style="color:#E1E4E8">, charset);</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (crossorigin) script.</span><span style="color:#B392F0">setAttribute</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"crossorigin"</span><span style="color:#E1E4E8">, crossorigin);</span></span>
+<span class="line"><span style="color:#E1E4E8">      script.onerror </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> reject;</span></span>
+<span class="line"><span style="color:#E1E4E8">      script.onload </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> script.</span><span style="color:#B392F0">onreadystatechange</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> () {</span></span>
+<span class="line"><span style="color:#F97583">        const</span><span style="color:#79B8FF"> rs</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.readyState;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (rs </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> rs </span><span style="color:#F97583">!==</span><span style="color:#9ECBFF"> "loaded"</span><span style="color:#F97583"> &amp;&amp;</span><span style="color:#E1E4E8"> rs </span><span style="color:#F97583">!==</span><span style="color:#9ECBFF"> "complete"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        script.onload </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> script.onreadystatechange </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">        resolve</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">      };</span></span>
+<span class="line"><span style="color:#E1E4E8">      document.head.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(script);</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 1️⃣ 加载流量统计 SDK</span></span>
+<span class="line"><span style="color:#B392F0">  loadScript</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"https://sdk.51.la/js-sdk-pro.min.js"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"UTF-8"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"LA_COLLECT"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">      LA</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">init</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">        id: </span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">.ck,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ck: </span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">.ck,</span></span>
+<span class="line"><span style="color:#E1E4E8">        autoTrack: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,    </span><span style="color:#6A737D">// 自动采集 PV/UV/点击/表单</span></span>
+<span class="line"><span style="color:#E1E4E8">        hashMode: </span><span style="color:#79B8FF">true</span><span style="color:#6A737D">      // SPA/hash 路由自动上报</span></span>
+<span class="line"><span style="color:#E1E4E8">      });</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">catch</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 2️⃣ 加载雀灵性能监控 SDK（可选）</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">.LingQueMonitorID) {</span></span>
+<span class="line"><span style="color:#B392F0">    loadScript</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"https://sdk.51.la/perf/js-sdk-perf.min.js"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"UTF-8"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"anonymous"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">      .</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        new</span><span style="color:#E1E4E8"> LingQue.</span><span style="color:#B392F0">Monitor</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">init</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">          id: </span><span style="color:#79B8FF">LA51</span><span style="color:#E1E4E8">.LingQueMonitorID,</span></span>
+<span class="line"><span style="color:#E1E4E8">          sendSuspicious: </span><span style="color:#79B8FF">true</span><span style="color:#6A737D">  // 采集可疑错误</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">      })</span></span>
+<span class="line"><span style="color:#E1E4E8">      .</span><span style="color:#B392F0">catch</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {});</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 挂载到全局，pjax 回调复用</span></span>
+<span class="line"><span style="color:#E1E4E8">window.statistics51aInit </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> statistics51aInit;</span></span></code></pre>
+<h3 id="14-关键参数解析">1.4 关键参数解析</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>autoTrack: true</code></td>
+<td>自动采集</td>
+<td>无需埋点代码，自动上报页面浏览、链接点击、表单提交</td>
+</tr>
+<tr>
+<td><code>hashMode: true</code></td>
+<td>SPA 兼容</td>
+<td><code>pjax</code> 切换页面时 <code>location.hash</code> 变化自动触发 <code>pageview</code></td>
+</tr>
+<tr>
+<td><code>sendSuspicious: true</code></td>
+<td>可疑错误</td>
+<td>捕获 <code>Script error.</code> 等跨域报错，辅助定位</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-备选方案静态注入injecthead">1.5 备选方案：静态注入（<code>inject.head</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">inject</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  head</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#6A737D">    # 取消注释以下 4 行，同时注释 main.js 调用，即可切换为静态注入</span></span>
+<span class="line"><span style="color:#6A737D">    # - &lt;script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"&gt;&lt;/script&gt;</span></span>
+<span class="line"><span style="color:#6A737D">    # - &lt;script&gt;LA.init({id:"3QhmqTheuIeNJHd9",ck:"3QhmqTheuIeNJHd9",autoTrack:true,hashMode:true})&lt;/script&gt;</span></span>
+<span class="line"><span style="color:#6A737D">    # - &lt;script src="https://sdk.51.la/perf/js-sdk-perf.min.js" crossorigin="anonymous"&gt;&lt;/script&gt;</span></span>
+<span class="line"><span style="color:#6A737D">    # - &lt;script&gt;new LingQue.Monitor().init({id:"3QhhHg4cYX5by8v8",sendSuspicious:true})&lt;/script&gt;</span></span></code></pre>
+<blockquote>
+<p><strong>切换原则</strong>：动态注入 = 按需加载、不阻塞首屏、pjax 友好；静态注入 = 更早采集首屏 PV、适合无 pjax 站点。<strong>二选一，别同时开启。</strong></p>
+</blockquote>
+<h3 id="16-敏感信息管理cicd-注入">1.6 敏感信息管理（CI/CD 注入）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#6A737D"># .github/workflows/deploy.yml</span></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Generate config</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">    cat &gt; _config.anzhiyu.yml &lt;&lt;EOF</span></span>
+<span class="line"><span style="color:#9ECBFF">    LA:</span></span>
+<span class="line"><span style="color:#9ECBFF">      enable: true</span></span>
+<span class="line"><span style="color:#9ECBFF">      ck: ${{ secrets.LA_CK }}</span></span>
+<span class="line"><span style="color:#9ECBFF">      LingQueMonitorID: ${{ secrets.LA_LINGQUE_ID }}</span></span>
+<span class="line"><span style="color:#9ECBFF">    ...</span></span>
+<span class="line"><span style="color:#9ECBFF">    EOF</span></span></code></pre>
+<p><strong>本地开发</strong> 用 <code>_config.anzhiyu.local.yml</code>（<code>.gitignore</code>），CI 合并生成最终配置。</p>
+<hr>
+<h2 id="2-文章顶部-ai-摘要三模式切换">2. 文章顶部 AI 摘要：三模式切换</h2>
+<h3 id="21-效果演示">2.1 效果演示</h3>
+<p>文章标题下方出现一行：</p>
+<blockquote>
+<p>🤖 <strong>Yoki</strong>：这是一篇关于 Hexo anzhiyu 主题配置的技术笔记，涵盖 51.LA 统计…</p>
+</blockquote>
+<p>点击 🔄 刷新图标可清除缓存重新生成。</p>
+<h3 id="22-配置全景_configanzhiyuyml">2.2 配置全景（<code>_config.anzhiyu.yml</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">post_head_ai_description</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  enable</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span></span>
+<span class="line"><span style="color:#85E89D">  gptName</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Yoki</span><span style="color:#6A737D">                    # 显示标签名</span></span>
+<span class="line"><span style="color:#85E89D">  mode</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">openai</span><span style="color:#6A737D">                     # local / tianli / openai</span></span>
+<span class="line"><span style="color:#85E89D">  switchBtn</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">false</span><span style="color:#6A737D">                 # 是否显示模式切换按钮</span></span>
+<span class="line"><span style="color:#85E89D">  btnLink</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">https://ifdian.net/a/yokipeek</span><span style="color:#6A737D">  # 失败时「去赞助」链接</span></span>
+<span class="line"><span style="color:#85E89D">  randomNum</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3</span><span style="color:#6A737D">                     # local 模式随机摘要数</span></span>
+<span class="line"><span style="color:#85E89D">  basicWordCount</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1000</span><span style="color:#6A737D">             # 发送给 API 的最小字数</span></span>
+<span class="line"><span style="color:#85E89D">  key</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">xxxx</span><span style="color:#6A737D">                        # tianli 模式 API Key</span></span>
+<span class="line"><span style="color:#85E89D">  Referer</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">https://xx.xx/</span><span style="color:#6A737D">          # tianli 模式 Referer</span></span>
+<span class="line"><span style="color:#85E89D">  openai</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    apiUrl</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">https://api.agnes-ai.cn/v1/chat/completions</span></span>
+<span class="line"><span style="color:#85E89D">    model</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">agnes-2.0-flash</span></span>
+<span class="line"><span style="color:#85E89D">    apiKey</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">sk-xxx</span><span style="color:#6A737D">                 # ⚠️ 勿提交仓库</span></span>
+<span class="line"><span style="color:#85E89D">    systemPrompt</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">你是一个文章摘要助手，请使用简洁的中文概括以下文章的核心内容，不超过200字</span></span>
+<span class="line"><span style="color:#85E89D">    maxTokens</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">500</span></span>
+<span class="line"><span style="color:#85E89D">    temperature</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.7</span></span></code></pre>
+<h3 id="23-三种模式对比">2.3 三种模式对比</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>数据来源</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>local</strong></td>
+<td>Front-matter <code>ai:</code> 字段</td>
+<td>零成本、零延迟、可控</td>
+<td>需手写/预先生成</td>
+<td>文章少、追求极致可控</td>
+</tr>
+<tr>
+<td><strong>tianli</strong></td>
+<td>TianliGPT API</td>
+<td>免费、中文优化</td>
+<td>限频、稳定性依赖第三方</td>
+<td>个人博客、不想折腾 Key</td>
+</tr>
+<tr>
+<td><strong>openai</strong></td>
+<td>OpenAI 兼容 API</td>
+<td>模型可选、质量高、支持长文</td>
+<td>需 Key、有成本</td>
+<td>追求质量、有预算、自建代理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-核心逻辑themesanzhiyusourcejsanzhiyuai_abstractjs">2.4 核心逻辑（<code>themes/anzhiyu/source/js/anzhiyu/ai_abstract.js</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> AIAbstract</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  constructor</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.config </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> GLOBAL_CONFIG</span><span style="color:#E1E4E8">.aiAbstract;</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.cacheKey </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> 'ai_abstract_cache'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.cacheTTL </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 24</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 60</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 60</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 24h</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  async</span><span style="color:#B392F0"> init</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.config.enable) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> article</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'article'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">article) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> content</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">extractText</span><span style="color:#E1E4E8">(article);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (content.</span><span style="color:#79B8FF">length</span><span style="color:#F97583"> &lt;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.config.basicWordCount) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> cache</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">getCache</span><span style="color:#E1E4E8">(content);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (cache) </span><span style="color:#F97583">return</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">(cache);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // 无缓存 → 调用对应模式 API</span></span>
+<span class="line"><span style="color:#F97583">    let</span><span style="color:#E1E4E8"> summary;</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.config.mode) {</span></span>
+<span class="line"><span style="color:#F97583">      case</span><span style="color:#9ECBFF"> 'local'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        summary </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">getLocalSummary</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">      case</span><span style="color:#9ECBFF"> 'tianli'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        summary </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">callTianli</span><span style="color:#E1E4E8">(content);</span></span>
+<span class="line"><span style="color:#F97583">        break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">      case</span><span style="color:#9ECBFF"> 'openai'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        summary </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">callOpenAI</span><span style="color:#E1E4E8">(content);</span></span>
+<span class="line"><span style="color:#F97583">        break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (summary) {</span></span>
+<span class="line"><span style="color:#79B8FF">      this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">setCache</span><span style="color:#E1E4E8">(content, summary);</span></span>
+<span class="line"><span style="color:#79B8FF">      this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">(summary);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // OpenAI 兼容调用（含自动补全 /chat/completions）</span></span>
+<span class="line"><span style="color:#F97583">  async</span><span style="color:#B392F0"> callOpenAI</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">text</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">apiUrl</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">model</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">apiKey</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">systemPrompt</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">maxTokens</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">temperature</span><span style="color:#E1E4E8"> } </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.config.openai;</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> url</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> apiUrl.</span><span style="color:#B392F0">endsWith</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'/chat/completions'</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> apiUrl </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> apiUrl.</span><span style="color:#B392F0">replace</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#85E89D;font-weight:bold">\/</span><span style="color:#F97583">+$</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">''</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> '/chat/completions'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> res</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(url, {</span></span>
+<span class="line"><span style="color:#E1E4E8">      method: </span><span style="color:#9ECBFF">'POST'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      headers: {</span></span>
+<span class="line"><span style="color:#9ECBFF">        'Content-Type'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'application/json'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        'Authorization'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">`Bearer ${</span><span style="color:#E1E4E8">apiKey</span><span style="color:#9ECBFF">}`</span></span>
+<span class="line"><span style="color:#E1E4E8">      },</span></span>
+<span class="line"><span style="color:#E1E4E8">      body: </span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">        model,</span></span>
+<span class="line"><span style="color:#E1E4E8">        messages: [</span></span>
+<span class="line"><span style="color:#E1E4E8">          { role: </span><span style="color:#9ECBFF">'system'</span><span style="color:#E1E4E8">, content: systemPrompt },</span></span>
+<span class="line"><span style="color:#E1E4E8">          { role: </span><span style="color:#9ECBFF">'user'</span><span style="color:#E1E4E8">, content: text.</span><span style="color:#B392F0">slice</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">8000</span><span style="color:#E1E4E8">) }</span></span>
+<span class="line"><span style="color:#E1E4E8">        ],</span></span>
+<span class="line"><span style="color:#E1E4E8">        max_tokens: maxTokens,</span></span>
+<span class="line"><span style="color:#E1E4E8">        temperature</span></span>
+<span class="line"><span style="color:#E1E4E8">      })</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> data</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> res.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> data.choices?.[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]?.message?.content?.</span><span style="color:#B392F0">trim</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 24h localStorage 缓存</span></span>
+<span class="line"><span style="color:#B392F0">  getCache</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">text</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> hash</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">hashText</span><span style="color:#E1E4E8">(text);</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> item</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(localStorage.</span><span style="color:#B392F0">getItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.cacheKey) </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> '{}'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (item[hash] </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> Date.</span><span style="color:#B392F0">now</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> item[hash].time </span><span style="color:#F97583">&lt;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.cacheTTL) {</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8"> item[hash].summary;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  setCache</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">text</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">summary</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> hash</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">hashText</span><span style="color:#E1E4E8">(text);</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> item</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(localStorage.</span><span style="color:#B392F0">getItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.cacheKey) </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> '{}'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    item[hash] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> { summary, time: Date.</span><span style="color:#B392F0">now</span><span style="color:#E1E4E8">() };</span></span>
+<span class="line"><span style="color:#E1E4E8">    localStorage.</span><span style="color:#B392F0">setItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.cacheKey, </span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">(item));</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 刷新按钮 → 清除缓存重试</span></span>
+<span class="line"><span style="color:#B392F0">  bindRefresh</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'.ai-abstract-refresh'</span><span style="color:#E1E4E8">)?.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'click'</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#79B8FF"> hash</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">hashText</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">extractText</span><span style="color:#E1E4E8">(document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'article'</span><span style="color:#E1E4E8">)));</span></span>
+<span class="line"><span style="color:#F97583">      const</span><span style="color:#79B8FF"> item</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(localStorage.</span><span style="color:#B392F0">getItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.cacheKey) </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> '{}'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">      delete</span><span style="color:#E1E4E8"> item[hash];</span></span>
+<span class="line"><span style="color:#E1E4E8">      localStorage.</span><span style="color:#B392F0">setItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.cacheKey, </span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">(item));</span></span>
+<span class="line"><span style="color:#E1E4E8">      location.</span><span style="color:#B392F0">reload</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="25-缓存机制详解">2.5 缓存机制详解</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>键</strong></td>
+<td><code>ai_abstract_cache</code> (localStorage)</td>
+</tr>
+<tr>
+<td><strong>子键</strong></td>
+<td>文章文本 SHA-256 前 16 位</td>
+</tr>
+<tr>
+<td><strong>值</strong></td>
+<td><code>{ summary: "...", time: 1722345678901 }</code></td>
+</tr>
+<tr>
+<td><strong>TTL</strong></td>
+<td>24 小时（<code>cacheTTL</code>）</td>
+</tr>
+<tr>
+<td><strong>失效</strong></td>
+<td>手动点击 🔄 / 文章内容变更 / 手动清 localStorage</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>为什么不缓存到服务端？</strong> 纯静态站点无后端，localStorage 零成本、零配置、用户端自动隔离。</p>
+</blockquote>
+<h3 id="26-自动开启新文章摘要scaffoldspostmd">2.6 自动开启新文章摘要（<code>scaffolds/post.md</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"><span style="color:#E1E4E8">---</span></span>
+<span class="line"><span style="color:#85E89D">title</span><span style="color:#E1E4E8">: {{ </span><span style="color:#9ECBFF">title</span><span style="color:#E1E4E8"> }}</span></span>
+<span class="line"><span style="color:#85E89D">date</span><span style="color:#E1E4E8">: {{ </span><span style="color:#9ECBFF">date</span><span style="color:#E1E4E8"> }}</span></span>
+<span class="line"><span style="color:#85E89D">tags</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">categories</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">cover</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">ai</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span><span style="color:#6A737D">          # ← 关键：新文章默认开启 AI 摘要</span></span>
+<span class="line"><span style="color:#85E89D">description</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">---</span></span></code></pre>
+<p><code>hexo new post "标题"</code> 生成的文章自带 <code>ai: true</code>，配合 <code>mode: openai</code> 即<strong>零手工</strong>生成摘要。</p>
+<h3 id="27-常见问题">2.7 常见问题</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>排查</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>摘要不显示</td>
+<td>文章字数 &lt; <code>basicWordCount</code> (默认 1000) / <code>ai: false</code> / 控制台报错</td>
+</tr>
+<tr>
+<td>报 <code>401 Unauthorized</code></td>
+<td><code>apiKey</code> 失效 / 代理拦截 / <code>Authorization</code> 头未发送</td>
+</tr>
+<tr>
+<td>刷新按钮无反应</td>
+<td><code>bindRefresh</code> 未绑定 / pjax 后未重新初始化 → <code>pjax:complete</code> 里调用 <code>AIAbstract.init()</code></td>
+</tr>
+<tr>
+<td>中英文混排截断</td>
+<td><code>maxTokens</code> 偏小 / <code>temperature</code> 过高 → 调大 <code>maxTokens</code>、降低 <code>temperature</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-迁移清单从-tianli-切到-openai">3. 迁移清单：从 tianli 切到 openai</h2>
+<ol>
+<li>申请/自建 OpenAI 兼容代理（如 One API、New API、Agnes）</li>
+<li><code>_config.anzhiyu.yml</code> 修改 <code>mode: openai</code> + 填入 <code>openai.*</code> 全块</li>
+<li><code>apiUrl</code> <strong>必须</strong>以 <code>/chat/completions</code> 结尾（代码会自动补全，但显式写全更稳）</li>
+<li><code>systemPrompt</code> 根据模型特性微调（如 <code>agnes-2.0-flash</code> 适合短摘要）</li>
+<li>本地 <code>hexo clean &amp;&amp; hexo s</code> 验证 → 推送触发 CI 部署</li>
+</ol>
+<hr>
+<h2 id="4-小结">4. 小结</h2>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>51.LA 双 SDK</strong></td>
+<td>动态注入 + <code>autoTrack/hashMode</code> + 雀灵性能监控 + CI 注入密钥</td>
+</tr>
+<tr>
+<td><strong>AI 摘要三模式</strong></td>
+<td>local/tianli/openai 运行时切换 + 24h localStorage 缓存 + 刷新清缓存</td>
+</tr>
+<tr>
+<td><strong>自动化</strong></td>
+<td>脚手架预置 <code>ai: true</code>，新文零配置生成摘要</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-下一篇预告">5. 下一篇预告</h2>
+<p><strong>《友链页顶部区块 + 底部版权栏 + 音乐页/时钟/代码注入等杂项配置》</strong></p>
+<p>敬请期待！</p>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/30/hexo-anzhiyu-series/01-environment-structure/" data-astro-cid-q4eo6rhm>← Hexo anzhiyu 主题深度定制系列（一）：环境版本锁定、目录结构设计与零冲突升级策略</a><a class="next" href="/2026/07/30/hexo-anzhiyu-series/03-album-system/" data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（五）：相册系统全解析 —— Type 1/2/3 三种布局 + Pixiv 专辑实战 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

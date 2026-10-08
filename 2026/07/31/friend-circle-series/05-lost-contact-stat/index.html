@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/05-lost-contact-stat/"><!-- Primary Meta Tags --><title>朋友圈失联统计显示（前端注入）</title><meta name="description" content="在朋友圈 footer 注入&quot;失联 N&quot;统计：脚本读后端 /all 的 error_num，动态插入 fc-lost-contact 标签，随后端状态自动显示与隐藏，无需每次构建。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/05-lost-contact-stat/"><meta property="og:title" content="朋友圈失联统计显示（前端注入）"><meta property="og:description" content="在朋友圈 footer 注入&quot;失联 N&quot;统计：脚本读后端 /all 的 error_num，动态插入 fc-lost-contact 标签，随后端状态自动显示与隐藏，无需每次构建。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>朋友圈失联统计显示（前端注入）</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-31T00:50:00.000Z" data-astro-cid-q4eo6rhm>2026-07-31</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><blockquote>
+<p><strong>⚠️ 已清理（2026-08-05）</strong>：本文所述 <code>source/js/friends/lost-contact-stat.js</code> 已删除。当前失联统计已由 <code>friend-circle-default.custom.js</code>（lite 自写版）内置实现，本文仅供历史参考。</p>
+</blockquote>
+<h2 id="一需求">一、需求</h2>
+<p>朋友圈 footer 已经有这些统计：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>订阅 11</span></span>
+<span class="line"><span>活跃 11</span></span>
+<span class="line"><span>日志 11</span></span>
+<span class="line"><span>更新于：2026-07-31 20:47:27</span></span></code></pre>
+<p>现在要加一个：<strong>失联 N</strong>（后端判定抓不到文章的友链数量），并且<strong>随后端状态自动显隐</strong>——后端 error 归 0 时自动消失，出现失联友链时自动显示。</p>
+<h2 id="二思路">二、思路</h2>
+<p>前端 bundle 是 Vue 混淆产物，改它维护成本高。更优雅的方式：<strong>页面注入一段独立的轻量脚本</strong>，它做三件事：</p>
+<ol>
+<li>轮询等待 bundle 渲染出统计 footer（<code>.cf-data-active</code>）</li>
+<li>请求后端 <code>/all</code>，读 <code>statistical_data.error_num</code></li>
+<li><code>error_num &gt; 0</code> 时在 footer 追加“失联 N”标签</li>
+</ol>
+<p>优点：</p>
+<ul>
+<li>不侵入 bundle，升级 bundle 不受影响</li>
+<li>数据实时来自后端，不需要每次友链变化都重新构建博客</li>
+<li>逻辑简单，可读可维护</li>
+</ul>
+<h2 id="三脚本-lost-contact-statjs">三、脚本 lost-contact-stat.js</h2>
+<p>位置：<code>source/js/friends/lost-contact-stat.js</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> () {</span></span>
+<span class="line"><span style="color:#F97583">  var</span><span style="color:#E1E4E8"> api </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> window.</span><span style="color:#79B8FF">FC_API_URL</span><span style="color:#F97583"> ||</span><span style="color:#9ECBFF"> 'https://fc.weiguang.eu.org/'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  var</span><span style="color:#E1E4E8"> shown </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  function</span><span style="color:#B392F0"> inject</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">count</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (shown) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> target </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'.cf-data-active'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">target </span><span style="color:#F97583">||</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">target.parentElement) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    shown </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> el </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'div'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    el.className </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> 'cf-data-active fc-lost-contact'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    el.style.cssText </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#9ECBFF">      'color: var(--anzhiyu-secondtext) !important;opacity: .8;filter: grayscale(1);'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    el.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> '&lt;span class="cf-label"&gt;失联&lt;/span&gt;&lt;span class="cf-message"&gt;'</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> count </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> '&lt;/span&gt;'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    target.parentElement.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(el);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  function</span><span style="color:#B392F0"> poll</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> target </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'.cf-data-active'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">target) {</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">window.__fcLostContactTimer) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        window.__fcLostContactTimer </span><span style="color:#F97583">=</span><span style="color:#B392F0"> setTimeout</span><span style="color:#E1E4E8">(poll, </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#F97583">      return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#B392F0">    fetch</span><span style="color:#E1E4E8">(api </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> 'all'</span><span style="color:#E1E4E8">, { cache: </span><span style="color:#9ECBFF">'no-store'</span><span style="color:#E1E4E8"> })</span></span>
+<span class="line"><span style="color:#E1E4E8">      .</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">r</span><span style="color:#E1E4E8">) { </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> r.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">(); })</span></span>
+<span class="line"><span style="color:#E1E4E8">      .</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">d</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#E1E4E8"> n </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> d </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> d.statistical_data </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> d.statistical_data.error_num;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8"> n </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'number'</span><span style="color:#F97583"> &amp;&amp;</span><span style="color:#E1E4E8"> n </span><span style="color:#F97583">&gt;</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) </span><span style="color:#B392F0">inject</span><span style="color:#E1E4E8">(n);</span></span>
+<span class="line"><span style="color:#E1E4E8">      })</span></span>
+<span class="line"><span style="color:#E1E4E8">      .</span><span style="color:#B392F0">catch</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> () {});</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  poll</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">})();</span></span></code></pre>
+<h3 id="关键点">关键点</h3>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>window.FC_API_URL</code></td>
+<td>在 <code>fcircle.pug</code> 注入的全局变量，避免硬编码域名</td>
+</tr>
+<tr>
+<td><code>cache: 'no-store'</code></td>
+<td>后端是动态 API，禁止缓存，保证统计实时</td>
+</tr>
+<tr>
+<td><code>.cf-data-active</code></td>
+<td>bundle 渲染统计 footer 的 class，找它作为插入锚点</td>
+</tr>
+<tr>
+<td><code>shown</code> 防抖</td>
+<td>只注入一次</td>
+</tr>
+<tr>
+<td>轮询等待</td>
+<td>Vue 异步渲染，footer 可能晚出现，500ms 重试直到出现</td>
+</tr>
+<tr>
+<td><code>error_num === 0</code></td>
+<td>什么都不做（不显示），后端恢复后“失联”自动消失</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注入的样式：<code>filter: grayscale(1)</code> 让失联标签呈灰色，视觉上与正常统计区分。</p>
+</blockquote>
+<h2 id="四在-fcirclepug-中挂载">四、在 fcircle.pug 中挂载</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="pug"><code><span class="line"><span style="color:#85E89D">script</span><span style="color:#79B8FF">(</span><span style="color:#B392F0">defer</span><span style="color:#B392F0"> data-pjax</span><span style="color:#79B8FF">)</span><span style="color:#F97583">.</span></span>
+<span class="line"><span style="color:#E1E4E8">  window.FC_API_URL = '</span><span style="color:#9ECBFF">!{</span><span style="color:#E1E4E8">theme</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">friends_vue</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">apiurl</span><span style="color:#9ECBFF">}</span><span style="color:#E1E4E8">';</span></span>
+<span class="line"><span style="color:#85E89D">script</span><span style="color:#79B8FF">(</span><span style="color:#B392F0">defer</span><span style="color:#B392F0"> data-pjax</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#B392F0">url_for</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'js/friends/lost-contact-stat.js'</span><span style="color:#E1E4E8">)</span><span style="color:#79B8FF">)</span></span></code></pre>
+<ul>
+<li><code>data-pjax</code>：pjax 切页后脚本重新执行</li>
+<li>顺序：先设 <code>FC_API_URL</code>，再加载统计脚本</li>
+</ul>
+<h2 id="五后端返回的统计结构">五、后端返回的统计结构</h2>
+<p><code>GET {api}/all</code>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "article_data"</span><span style="color:#E1E4E8">: [</span><span style="color:#FDAEB7;font-style:italic">...</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#79B8FF">  "statistical_data"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "friends_num"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "active_num"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "error_num"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "article_num"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "last_updated_time"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2026-07-31 21:48:30"</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<ul>
+<li><code>active_num</code>：活跃友链数（<code>error_num = friends_num - active_num</code>）</li>
+<li><code>error_num &gt; 0</code> 才显示失联统计</li>
+</ul>
+<h2 id="六验证">六、验证</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> hexo</span><span style="color:#9ECBFF"> clean</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> hexo</span><span style="color:#9ECBFF"> ge</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> hexo</span><span style="color:#9ECBFF"> d</span></span></code></pre>
+<p><strong>有失联友链时</strong>（后端 <code>error_num &gt; 0</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>订阅 11  活跃 10  日志 11  更新于：...  失联 1</span></span></code></pre>
+<p><strong>全部正常时</strong>（<code>error_num = 0</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>订阅 11  活跃 11  日志 11  更新于：...</span></span></code></pre>
+<p>无“失联”显示——<strong>这就是正确的行为</strong>，说明没有失联友链。</p>
+<h3 id="headless-验证可选">headless 验证（可选）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 用无头浏览器 dump 渲染后的 DOM，检查 fc-lost-contact 是否存在</span></span>
+<span class="line"><span style="color:#B392F0">msedge</span><span style="color:#79B8FF"> --headless=new</span><span style="color:#79B8FF"> --disable-gpu</span><span style="color:#79B8FF"> --dump-dom</span><span style="color:#9ECBFF"> https://你的域名/fcircle/</span></span></code></pre>
+<h2 id="七为什么不用构建时注入">七、为什么不用构建时注入</h2>
+<p>也可以在 <code>hexo ge</code> 时根据 link.yml 失联组数量静态写入。但<strong>失联状态由后端每 3 小时更新</strong>，静态方案要每次友链变化都重新构建部署。运行时读 API 的方案：</p>
+<ul>
+<li>✅ 秒级反映后端最新状态</li>
+<li>✅ 后端恢复后“失联”自动消失，无需部署</li>
+<li>✅ 与朋友圈文章流数据同源，不会出现“页面说没失联、流里却没文章”的矛盾</li>
+</ul>
+<blockquote>
+<p>下一篇：整个搭建过程中踩过的坑与排查思路。</p>
+</blockquote>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/31/friend-circle-series/04-auto-detect-deploy/" data-astro-cid-q4eo6rhm>← 友链自动检测与自动部署（GitHub Actions）</a><a class="next" href="/2026/07/31/friend-circle-series/06-troubleshooting/" data-astro-cid-q4eo6rhm>踩坑与问题排查实录 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

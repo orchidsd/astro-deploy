@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/music-player-series/02-lyrics/"><!-- Primary Meta Tags --><title>anzhiyu 音乐播放器深度魔改系列（二）：歌词功能——URL 歌词、自绘滚动与竞态根治</title><meta name="description" content="播放器歌词一直「暂无歌词」？APlayer lrcType 3 异步 fetch 天生不同步？本文用 window.__parseLrc 统一解析 + timeupdate 自绘滚动 + 音乐馆竞态对比根治，让歌词逐行精准跟唱。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/music-player-series/02-lyrics/"><meta property="og:title" content="anzhiyu 音乐播放器深度魔改系列（二）：歌词功能——URL 歌词、自绘滚动与竞态根治"><meta property="og:description" content="播放器歌词一直「暂无歌词」？APlayer lrcType 3 异步 fetch 天生不同步？本文用 window.__parseLrc 统一解析 + timeupdate 自绘滚动 + 音乐馆竞态对比根治，让歌词逐行精准跟唱。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>anzhiyu 音乐播放器深度魔改系列（二）：歌词功能——URL 歌词、自绘滚动与竞态根治</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T07:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头歌词不是没有是没对上">开头：歌词不是「没有」，是「没对上」</h2>
+<p>左下角播放器从 APlayer 官方示例抄的歌词配置，跑起来<strong>永远是「暂无歌词」</strong>——明明歌单里每首歌都有 <code>lrc</code> 字段。后来换成 <code>lrcType: 3</code>（异步 fetch 歌词），歌词出来了，但<strong>永远慢半拍</strong>：歌已经唱到副歌，高亮还停在第一句。</p>
+<p>根因：APlayer 的异步歌词加载与 <code>timeupdate</code> 播放进度不同步，且它只比对「播放列表索引」不比对「歌词内容」——切歌后旧歌单晚到的歌词 XHR 还能覆盖新歌词。本文给出三件套解法：<strong>统一解析器 + 自绘滚动 + 竞态对比根治</strong>。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：左下角播放器与音乐馆页歌词逐行精准同步、切歌不串歌词、深浅色模式可读，并把「暂无歌词」彻底消灭。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 已完成本系列第一篇（音频保活架构）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 歌单数据含 <code>lrc</code> / <code>lyric</code> 字段（URL 或内嵌）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 可本地起 <code>hexo s</code> 验证</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>统一歌词解析器 <code>window.__parseLrc</code>（多时间戳、毫秒、排序）</li>
+<li>为什么自绘比 APlayer lrcType 可靠</li>
+<li>音乐馆歌词竞态的「期望 vs 实际」对比根治法</li>
+<li>深浅色下歌词可读性细节</li>
+</ol>
+<hr>
+<h2 id="step-1统一歌词解析器">Step 1：统一歌词解析器</h2>
+<blockquote>
+<p>目的：一套解析逻辑全站复用（左下播放器 + 首页 + 音乐馆），消除三处重复实现。做完这步解析结果可用。</p>
+</blockquote>
+<p><strong>操作：</strong> 在 <code>utils.js</code> 顶部定义全局解析器：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#E1E4E8">window.</span><span style="color:#B392F0">__parseLrc</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">text</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> lines</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [], </span><span style="color:#79B8FF">times</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">text) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> { lines, times };</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> regex</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> /</span><span style="color:#85E89D;font-weight:bold">\[</span><span style="color:#DBEDFF">(</span><span style="color:#79B8FF">\d</span><span style="color:#F97583">{1,2}</span><span style="color:#DBEDFF">):(</span><span style="color:#79B8FF">\d</span><span style="color:#F97583">{1,2}</span><span style="color:#DBEDFF">)(?:</span><span style="color:#85E89D;font-weight:bold">\.</span><span style="color:#DBEDFF">(</span><span style="color:#79B8FF">\d</span><span style="color:#F97583">{1,3}</span><span style="color:#DBEDFF">))</span><span style="color:#F97583">?</span><span style="color:#85E89D;font-weight:bold">\]</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">g</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  text.</span><span style="color:#B392F0">split</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#79B8FF">\r</span><span style="color:#F97583">?</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">forEach</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">rawLine</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* 提取时间戳与文本，支持 [mm:ss][mm:ss.xxx] 多标签 */</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">  lines.</span><span style="color:#B392F0">sort</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">a</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">b</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> a.time </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> b.time);</span></span>
+<span class="line"><span style="color:#E1E4E8">  times.</span><span style="color:#B392F0">sort</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">a</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">b</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> a </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> b);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> { lines, times };</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>预期输出：</strong> <code>window.__parseLrc("[00:12.500]第一句\n[00:15]第二句")</code> 返回按时间排序的行数组与时间数组。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：歌词文件可能用 <code>\r\n</code>（Windows）或 <code>\r</code>，<code>split(/\r?\n/)</code> 必须兼容；同一行多个 <code>[mm:ss]</code> 标签（间奏复用行）要分别展开。</p>
+</blockquote>
+<hr>
+<h2 id="step-2自绘歌词--timeupdate-同步">Step 2：自绘歌词 + timeupdate 同步</h2>
+<blockquote>
+<p>目的：放弃 APlayer lrcType，自己渲染歌词 DOM，用 <code>timeupdate</code> 事件逐行滚动。做完这步歌词精确跟唱。</p>
+</blockquote>
+<p><strong>操作：</strong> 创建歌词容器并实现同步逻辑（<code>utils.js:994-1099</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> lrcEl</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"div"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">lrcEl.className </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "nav-music-lrc"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">lrcEl.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> '&lt;div class="nav-music-lrc-inner"&gt;&lt;/div&gt;'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">navMusicEl.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(lrcEl);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// timeupdate 同步：倒序遍历 times 找当前行，滚动到第 3 行（行高 28px）</span></span>
+<span class="line"><span style="color:#E1E4E8">navPlayer.audio.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"timeupdate"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> () {</span></span>
+<span class="line"><span style="color:#B392F0">  updateNavLrc</span><span style="color:#E1E4E8">(navPlayer.audio.currentTime);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"><span style="color:#6A737D">// 滚动计算：translateY(${56 - idx * 28}px)，56 = 让当前行落在第 3 行</span></span></code></pre>
+<p><strong>预期输出：</strong> 播放时歌词逐行高亮滚动，与歌声同步；无歌词显示「暂无歌词」占位。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：行高与偏移是配套的（<code>28px</code> 行高、<code>translateY</code> 基准 <code>56</code>=第 3 行），改行距必须同步改偏移（本系列曾把当前行从第 2 行调到第 3 行）；<code>timeupdate</code> 事件频率够用，不要用 <code>requestAnimationFrame</code> 轮询。</p>
+</blockquote>
+<hr>
+<h2 id="step-3url-歌词-fetch--缓存去重">Step 3：URL 歌词 fetch + 缓存去重</h2>
+<blockquote>
+<p>目的：歌词可能是外链 URL，需要异步拉取；同曲不重复请求。做完这步 URL 歌词可用且不刷接口。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>utils.js:1065-1099</code>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#B392F0"> loadNavLrc</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> track</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> navPlayer.list.audios[navPlayer.list.index];</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> url</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> track </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> (track.lrc </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> track.lyric);</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">url) { lrcEl._times </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []; </span><span style="color:#B392F0">renderNavLrc</span><span style="color:#E1E4E8">({ lines: [] }); </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (lrcEl._url </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> url) { </span><span style="color:#B392F0">updateNavLrc</span><span style="color:#E1E4E8">(navPlayer.audio.currentTime); </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">; }  </span><span style="color:#6A737D">// 同曲不重复 fetch</span></span>
+<span class="line"><span style="color:#E1E4E8">  lrcEl._url </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> url;</span></span>
+<span class="line"><span style="color:#B392F0">  fetch</span><span style="color:#E1E4E8">(url).</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">r</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> (r.ok </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> r.</span><span style="color:#B392F0">text</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> Promise</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">reject</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Error</span><span style="color:#E1E4E8">(r.status))))</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">then</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">text</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> { </span><span style="color:#B392F0">parseNavLrc</span><span style="color:#E1E4E8">(text); </span><span style="color:#B392F0">renderNavLrc</span><span style="color:#E1E4E8">(); </span><span style="color:#B392F0">updateNavLrc</span><span style="color:#E1E4E8">(navPlayer.audio.currentTime); })</span></span>
+<span class="line"><span style="color:#E1E4E8">    .</span><span style="color:#B392F0">catch</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { lrcEl._times </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []; </span><span style="color:#B392F0">renderNavLrc</span><span style="color:#E1E4E8">({ lines: [] }); });</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"><span style="color:#E1E4E8">navPlayer.</span><span style="color:#B392F0">on</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"listswitch"</span><span style="color:#E1E4E8">, loadNavLrc);</span></span>
+<span class="line"><span style="color:#E1E4E8">navPlayer.</span><span style="color:#B392F0">on</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"play"</span><span style="color:#E1E4E8">, loadNavLrc);</span></span>
+<span class="line"><span style="color:#B392F0">loadNavLrc</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<p><strong>预期输出：</strong> 切歌/播放触发加载；同曲（切回来）不重复请求，直接按当前进度刷新；fetch 失败兜底空歌词。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：<code>_url</code> 缓存字段必须存在（首次设 <code>_url</code> 后同 URL 直接复用），否则每切一次歌就重复请求一次；失败时也要清 <code>_times</code>，否则残留上一首歌的时间轴会错位高亮。</p>
+</blockquote>
+<hr>
+<h2 id="step-4音乐馆歌词竞态根治">Step 4：音乐馆歌词竞态根治</h2>
+<blockquote>
+<p>目的：切歌单时旧歌单晚到的歌词 XHR 不再覆盖新歌词。做完这步音乐馆歌词不串台。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>utils.js:1558-1589</code>——对比「期望歌词」与「实际 DOM 歌词」，不一致则清缓存强制重载：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 歌词竞态修复：旧歌单的异步歌词 XHR 晚到仍会覆盖新歌词（APlayer 只比对索引不比对歌曲），</span></span>
+<span class="line"><span style="color:#6A737D">// 切换后对比实际歌词与当前歌曲歌词，不一致则清缓存强制重载</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#B392F0"> fixLyricsRace</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  /* fetch 当前曲 lrcUrl，解析出期望歌词序列 */</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> want</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (playerNow.lrc.parse </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> playerNow.lrc.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(text) </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> []).</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">i</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> i[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">]).</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"|"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> have</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Array.</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(contents.</span><span style="color:#B392F0">querySelectorAll</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"p"</span><span style="color:#E1E4E8">)).</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">p</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> p.textContent).</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"|"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (want </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> have </span><span style="color:#F97583">!==</span><span style="color:#E1E4E8"> want) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    playerNow.lrc.parsed </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#E1E4E8">    playerNow.lrc.container.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    playerNow.lrc.</span><span style="color:#B392F0">switch</span><span style="color:#E1E4E8">(idx);   </span><span style="color:#6A737D">// 强制重载</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"><span style="color:#B392F0">setTimeout</span><span style="color:#E1E4E8">(fixLyricsRace, </span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">);   </span><span style="color:#6A737D">// 1s 后检查（给旧 XHR 时间）</span></span>
+<span class="line"><span style="color:#B392F0">setTimeout</span><span style="color:#E1E4E8">(fixLyricsRace, </span><span style="color:#79B8FF">2500</span><span style="color:#E1E4E8">);   </span><span style="color:#6A737D">// 2.5s 再兜底一次</span></span></code></pre>
+<p><strong>预期输出：</strong> 音乐馆快速切换歌单后，歌词始终是当前歌曲的；旧 XHR 晚到也不覆盖。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：对比串用 <code>join("|")</code> 拼整页歌词，避免逐行比对性能问题；两次延时检查覆盖不同竞态窗口，别只留一次。</p>
+</blockquote>
+<hr>
+<h2 id="step-5歌词样式与可读性">Step 5：歌词样式与可读性</h2>
+<blockquote>
+<p>目的：大字歌词居中 + 渐隐遮罩 + 深浅色可读。做完这步视觉达标。</p>
+</blockquote>
+<p><strong>操作要点</strong>（<code>music.styl</code> + <code>fix/aplayer.css</code>）：</p>
+<ul>
+<li>音乐馆大字歌词 + mask 渐隐：<code>.aplayer-lrc</code> height 800%、<code>mask-image</code> 渐变、当前行高亮</li>
+<li>当前行对齐第 3 行：<code>#anMusic-page .aplayer.aplayer-withlrc .aplayer-lrc-contents { margin-top: 80px; }</code></li>
+<li>左下角歌词块宽度自适应歌词长度（最长 420px）</li>
+<li>播放中金黄底 → 歌词当前行深色字 <code>#18171d</code>；浅色模式白底 → 深色文字（<code>[data-theme="light"]</code> 特例覆盖）</li>
+</ul>
+<p><strong>预期输出：</strong> 两种主题模式下歌词都清晰可读，不出现「黄底黄字」「白底白字」。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：金黄底（<code>--anzhiyu-main</code>）上的文字必须深色 <code>#18171d</code>，默认白字对比度极差（本系列实测过 <code>aplayer.css</code> 默认规则白字 + 金黄底不可读）；浅色模式要单独覆盖金黄规则。</p>
+</blockquote>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = 歌词功能达标。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 有 URL 歌词的歌逐行跟唱、无错位</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 无歌词的歌显示「暂无歌词」而非乱码/空</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 快速切歌单 10 次，歌词始终是当前歌曲</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 深浅色两模式歌词均可读</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 音乐馆歌词当前行在第 3 行（margin-top 80px，可用 <code>tools/edge-verify/verify-music-lrc.js</code> 断言）</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一直显示暂无歌词</td>
+<td>歌单没有 <code>lrc</code>/<code>lyric</code> 字段</td>
+<td>歌单数据补 URL 歌词字段</td>
+</tr>
+<tr>
+<td>歌词慢半拍</td>
+<td>用 APlayer lrcType 3</td>
+<td>自绘 + timeupdate</td>
+</tr>
+<tr>
+<td>切歌后歌词串台</td>
+<td>旧 XHR 晚到覆盖</td>
+<td>期望 vs 实际对比 + 清缓存重载</td>
+</tr>
+<tr>
+<td>黄底黄字看不清</td>
+<td>金黄底默认白字</td>
+<td>金黄底强制深字 <code>#18171d</code></td>
+</tr>
+<tr>
+<td>歌词滚动行不对齐</td>
+<td>行距与偏移不配套</td>
+<td>行高与 translateY 基准同步改</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>歌词问题的根因是「<strong>APlayer 异步歌词机制不可靠</strong>」，解法是绕开它自绘。核心要点：</p>
+<ol>
+<li><strong>解析统一</strong>：<code>window.__parseLrc</code> 全站共用，支持多标签/毫秒/排序</li>
+<li><strong>同步自绘</strong>：timeupdate 事件驱动，精准跟唱</li>
+<li><strong>竞态对比</strong>：用「期望 vs 实际」内容对比根治串台</li>
+<li><strong>可读性优先</strong>：深浅色两套覆盖，金黄底必深字</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/music-player-series/01-pjax-zero-interrupt/">上一篇：切页零中断——pjax 下播放不暂停的架构与补丁</a></li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/music-player-series/03-controls-layout/">下一篇：控制条与布局——展开折叠、音量条与控制台态</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/music-player-series/01-pjax-zero-interrupt/" data-astro-cid-q4eo6rhm>← anzhiyu 音乐播放器深度魔改系列（一）：切页零中断——pjax 下播放不暂停的架构与补丁</a><a class="next" href="/2026/08/09/music-player-series/03-controls-layout/" data-astro-cid-q4eo6rhm>anzhiyu 音乐播放器深度魔改系列（三）：控制条与布局——展开折叠、音量条与控制台态 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

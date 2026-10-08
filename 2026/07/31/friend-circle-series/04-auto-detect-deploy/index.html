@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/04-auto-detect-deploy/"><!-- Primary Meta Tags --><title>友链自动检测与自动部署（GitHub Actions）</title><meta name="description" content="用 GitHub Actions 实现友链每日自动检测：读后端 /friend 的 error 字段自动归类失联友链、自动构建、自动推送到部署产物仓库、Cloudflare 自动上线，并复盘过程中踩过的三个坑。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/04-auto-detect-deploy/"><meta property="og:title" content="友链自动检测与自动部署（GitHub Actions）"><meta property="og:description" content="用 GitHub Actions 实现友链每日自动检测：读后端 /friend 的 error 字段自动归类失联友链、自动构建、自动推送到部署产物仓库、Cloudflare 自动上线，并复盘过程中踩过的三个坑。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>友链自动检测与自动部署（GitHub Actions）</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-31T00:40:00.000Z" data-astro-cid-q4eo6rhm>2026-07-31</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="一目标">一、目标</h2>
+<p>每天自动做这件事：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 读后端 /friend 的 error 字段（后端每 3 小时更新）</span></span>
+<span class="line"><span>2. 把 error=true 的友链移入 link.yml 的失联组</span></span>
+<span class="line"><span>3. 把 error=false 的友链移回正常组</span></span>
+<span class="line"><span>4. 有变化 → 自动构建 hexo → 推送到 orchidsd.github.io</span></span>
+<span class="line"><span>5. Cloudflare Git 集成检测到推送 → 自动部署上线</span></span></code></pre>
+<p>全流程无人值守。友链失效/恢复，<strong>页面 24 小时内自动反映</strong>。</p>
+<h2 id="二检测脚本-friend-checkjs">二、检测脚本 friend-check.js</h2>
+<p>位置：<code>friend-check/friend-check.js</code>（放这里而不是 <code>scripts/</code>，因为 Hexo 会加载 <code>scripts/</code> 下所有 js）</p>
+<h3 id="为什么用后端-error而不是自己探测">为什么用“后端 error”而不是自己探测</h3>
+<p>第一版是脚本直接发 HTTP 请求探测友链。结果踩坑：<strong>GitHub Actions 的数据中心 IP 被部分国内友链站屏蔽</strong>（如 <code>akilar.top</code>），导致正常友链被误判失联。而<strong>后端跑在 Vercel 环境，能访问所有友链</strong>，且它的 <code>error</code> 语义（能否抓到文章）和朋友圈显示一致。所以最终方案：<strong>读后端 error 字段，本地只做“搬运”</strong>。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#9ECBFF">'use strict'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> fs</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'fs'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> path</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'path'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> yaml</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'js-yaml'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> LINK_FILE</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(__dirname, </span><span style="color:#9ECBFF">'..'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'source'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'_data'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'link.yml'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> FRIEND_API</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> process.env.</span><span style="color:#79B8FF">FRIEND_API</span><span style="color:#F97583"> ||</span><span style="color:#9ECBFF"> 'https://fc.weiguang.eu.org/friend'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> norm</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">url</span><span style="color:#E1E4E8">) { </span><span style="color:#F97583">return</span><span style="color:#B392F0"> String</span><span style="color:#E1E4E8">(url </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> ''</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">replace</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#85E89D;font-weight:bold">\/</span><span style="color:#F97583">+$</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">''</span><span style="color:#E1E4E8">); }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> fetchFriendErrors</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> res</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">FRIEND_API</span><span style="color:#E1E4E8">, {</span></span>
+<span class="line"><span style="color:#E1E4E8">    headers: { </span><span style="color:#9ECBFF">'User-Agent'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'friend-check/1.0'</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#E1E4E8">    timeout: </span><span style="color:#79B8FF">15000</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">res.ok) </span><span style="color:#F97583">throw</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`friend API -&gt; HTTP ${</span><span style="color:#E1E4E8">res</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">status</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> res.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(list)) </span><span style="color:#F97583">throw</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'friend API returned a non-array payload'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> map</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Map</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> f</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> list) </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (f </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> f.link) map.</span><span style="color:#B392F0">set</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">norm</span><span style="color:#E1E4E8">(f.link), </span><span style="color:#B392F0">Boolean</span><span style="color:#E1E4E8">(f.error));</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> map;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> data</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> yaml.</span><span style="color:#B392F0">load</span><span style="color:#E1E4E8">(fs.</span><span style="color:#B392F0">readFileSync</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">LINK_FILE</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'utf8'</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(data)) { console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'ERROR: link.yml is not a list'</span><span style="color:#E1E4E8">); process.</span><span style="color:#B392F0">exit</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">); }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> errMap;</span></span>
+<span class="line"><span style="color:#F97583">  try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    errMap </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetchFriendErrors</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">  } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`WARN: cannot reach friend API (${</span><span style="color:#E1E4E8">e</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">message</span><span style="color:#9ECBFF">}); leaving link.yml untouched`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;   </span><span style="color:#6A737D">// 后端不可达时绝不乱动 link.yml</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> normalGroups</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> data.</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">g</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">g.lost_contact </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(g.link_list));</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> lostGroup</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> data.</span><span style="color:#B392F0">find</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">g</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> g.lost_contact) </span><span style="color:#F97583">||</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> entries</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> g</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> normalGroups) </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> it</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> g.link_list) entries.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">({ it, from: </span><span style="color:#9ECBFF">'normal'</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (lostGroup) </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> it</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> lostGroup.link_list) entries.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">({ it, from: </span><span style="color:#9ECBFF">'lost'</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (entries.</span><span style="color:#79B8FF">length</span><span style="color:#F97583"> ===</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) { console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'No friends to check.'</span><span style="color:#E1E4E8">); </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> classified</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> entries.</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">e</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> key</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> norm</span><span style="color:#E1E4E8">(e.it.link);</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> known</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> errMap.</span><span style="color:#B392F0">has</span><span style="color:#E1E4E8">(key);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">...</span><span style="color:#E1E4E8">e, error: known </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> errMap.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(key) </span><span style="color:#F97583">:</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">, known };</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> normalList</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> classified.</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">c.error).</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> c.it);</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> lostList</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> classified.</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> c.error).</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> c.it);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // 写回 link.yml：正常组放第一组，失联组单独</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (normalGroups.</span><span style="color:#79B8FF">length</span><span style="color:#F97583"> ===</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    data.</span><span style="color:#B392F0">unshift</span><span style="color:#E1E4E8">({ class_name: </span><span style="color:#9ECBFF">'友谊长存'</span><span style="color:#E1E4E8">, class_desc: </span><span style="color:#9ECBFF">'那些人，那些事'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      flink_style: </span><span style="color:#9ECBFF">'anzhiyu'</span><span style="color:#E1E4E8">, hundredSuffix: </span><span style="color:#9ECBFF">''</span><span style="color:#E1E4E8">, link_list: normalList });</span></span>
+<span class="line"><span style="color:#E1E4E8">  } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> g</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> normalGroups) g.link_list </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#E1E4E8">    normalGroups[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">].link_list </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> normalList;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">lostGroup) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    data.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">({ class_name: </span><span style="color:#9ECBFF">'失联友链'</span><span style="color:#E1E4E8">, class_desc: </span><span style="color:#9ECBFF">'已失联的友链'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      lost_contact: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">, flink_style: </span><span style="color:#9ECBFF">'anzhiyu'</span><span style="color:#E1E4E8">, hundredSuffix: </span><span style="color:#9ECBFF">''</span><span style="color:#E1E4E8">, link_list: lostList });</span></span>
+<span class="line"><span style="color:#E1E4E8">  } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    lostGroup.link_list </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> lostList;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">  fs.</span><span style="color:#B392F0">writeFileSync</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">LINK_FILE</span><span style="color:#E1E4E8">, yaml.</span><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(data, { lineWidth: </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">, noRefs: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> }));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> unknown</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> classified.</span><span style="color:#B392F0">filter</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">c.known).</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> c.it.name);</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`classified: ${</span><span style="color:#E1E4E8">entries</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">length</span><span style="color:#9ECBFF">}, normal: ${</span><span style="color:#E1E4E8">normalList</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">length</span><span style="color:#9ECBFF">}, lost: ${</span><span style="color:#E1E4E8">lostList</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">length</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> c</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> classified)</span></span>
+<span class="line"><span style="color:#E1E4E8">    console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`  [${</span><span style="color:#E1E4E8">c</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">error</span><span style="color:#F97583"> ?</span><span style="color:#9ECBFF"> 'lost'</span><span style="color:#F97583"> :</span><span style="color:#9ECBFF"> 'ok'}]${</span><span style="color:#E1E4E8">c</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">known</span><span style="color:#F97583"> ?</span><span style="color:#9ECBFF"> ''</span><span style="color:#F97583"> :</span><span style="color:#9ECBFF"> ' (untracked)'} ${</span><span style="color:#E1E4E8">c</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">it</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">} ${</span><span style="color:#E1E4E8">c</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">it</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">link</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (unknown.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">) console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`WARN: not yet tracked by backend (kept in normal group): ${</span><span style="color:#E1E4E8">unknown</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">join</span><span style="color:#9ECBFF">(</span><span style="color:#9ECBFF">', '</span><span style="color:#9ECBFF">)</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">main</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">catch</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">e</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(e); process.</span><span style="color:#B392F0">exit</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">); });</span></span></code></pre>
+<p><strong>设计要点</strong>：</p>
+<ul>
+<li>链接先 <code>norm()</code>（去尾部斜杠）再匹配，避免 <code>https://a.com/</code> 和 <code>https://a.com</code> 对不上</li>
+<li>后端不认识的友链（<code>!known</code>）保守留在正常组，等后端下次抓取</li>
+<li>后端 API 不可达时直接退出不改文件，绝不误删数据</li>
+</ul>
+<h2 id="三workflowfriend-checkyml">三、Workflow：friend-check.yml</h2>
+<p>位置：<code>.github/workflows/friend-check.yml</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Friend Check &amp; Deploy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  schedule</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    - </span><span style="color:#85E89D">cron</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'0 4 * * *'</span><span style="color:#6A737D">        # 每天 UTC 04:00（北京时间 12:00）</span></span>
+<span class="line"><span style="color:#85E89D">  workflow_dispatch</span><span style="color:#E1E4E8">:            </span><span style="color:#6A737D"># 手动触发</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">permissions</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  contents</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">write</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  check</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    outputs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      changed</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ steps.check.outputs.changed }}</span><span style="color:#6A737D">   # ⚠️ 必须声明，否则下游读不到</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">: { </span><span style="color:#85E89D">node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'20'</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install js-yaml</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm install --no-save js-yaml</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run friend check</span></span>
+<span class="line"><span style="color:#85E89D">        id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">check</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          node friend-check/friend-check.js</span></span>
+<span class="line"><span style="color:#9ECBFF">          if [ -n "$(git status --porcelain source/_data/link.yml)" ]; then</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "changed=true" &gt;&gt; "$GITHUB_OUTPUT"</span></span>
+<span class="line"><span style="color:#9ECBFF">          else</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "changed=false" &gt;&gt; "$GITHUB_OUTPUT"</span></span>
+<span class="line"><span style="color:#9ECBFF">          fi</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Commit and push classified friends</span></span>
+<span class="line"><span style="color:#85E89D">        if</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">steps.check.outputs.changed == 'true'</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.name "friend-check[bot]"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.email "friend-check[bot]@users.noreply.github.com"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git add source/_data/link.yml</span></span>
+<span class="line"><span style="color:#9ECBFF">          git commit -m "chore: auto-classify friends by availability"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git push</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  deploy</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">check</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    if</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">needs.check.outputs.changed == 'true'</span><span style="color:#6A737D">       # 只有真的变化才部署</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">: { </span><span style="color:#85E89D">node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'20'</span><span style="color:#E1E4E8">, </span><span style="color:#85E89D">cache</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'npm'</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm ci</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Build site</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npx hexo generate</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages</span></span>
+<span class="line"><span style="color:#85E89D">        env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          PAT</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.PAT }}</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          if [ -z "$PAT" ]; then</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "::warning::PAT secret not configured, skipping deploy"</span></span>
+<span class="line"><span style="color:#9ECBFF">            exit 0</span></span>
+<span class="line"><span style="color:#9ECBFF">          fi</span></span>
+<span class="line"><span style="color:#9ECBFF">          cd public</span></span>
+<span class="line"><span style="color:#9ECBFF">          git init</span></span>
+<span class="line"><span style="color:#9ECBFF">          git branch -m main                       # ⚠️ 见坑 2</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.name "friend-check[bot]"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.email "friend-check[bot]@users.noreply.github.com"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git add -A</span></span>
+<span class="line"><span style="color:#9ECBFF">          git commit -m "deploy: update friends (auto)"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git push -f "https://x-access-token:${PAT}@github.com/orchidsd/orchidsd.github.io.git" main</span></span></code></pre>
+<h2 id="四三个真实的坑已修复">四、三个真实的坑（已修复）</h2>
+<h3 id="坑-1job-没暴露-outputsdeploy-永远被跳过">坑 1：job 没暴露 outputs，deploy 永远被跳过</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">outputs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  changed</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ steps.check.outputs.changed }}</span></span></code></pre>
+<p>GitHub Actions 里 <strong>job 级别的 <code>outputs</code> 必须显式声明</strong>，否则 <code>needs.check.outputs.changed</code> 一直是空，<code>deploy</code> job 的 <code>if</code> 永远不成立。</p>
+<p><strong>症状</strong>：check 明明检测到变化并提交了，但 deploy job 显示 <code>skipped</code>。</p>
+<h3 id="坑-2git-init-默认分支是-masterpush-main-失败">坑 2：git init 默认分支是 master，push main 失败</h3>
+<p>Actions runner 上 <code>git init</code> 创建的仓库默认分支是 <code>master</code>，而 push 指定 <code>main</code>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>error: src refspec main does not match any</span></span></code></pre>
+<p><strong>修复</strong>：<code>git init</code> 后加 <code>git branch -m main</code>。</p>
+<h3 id="坑-3用-http-探测被站点屏蔽github-actions-ip">坑 3：用 HTTP 探测被站点屏蔽（GitHub Actions IP）</h3>
+<p>第一版脚本直接请求友链域名，<code>akilar.top</code> 这类对数据中心 IP 有防护的站点全部“假失联”。<strong>改成读后端 error 字段后彻底解决</strong>（后端 Vercel 环境访问无限制）。</p>
+<h2 id="五pat-secret-配置">五、PAT Secret 配置</h2>
+<p><code>deploy</code> job 用 PAT（Personal Access Token）把 public/ 推到部署产物仓库：</p>
+<ol>
+<li>GitHub → Settings → Developer settings → Personal access tokens → <strong>Fine-grained tokens</strong></li>
+<li>勾选 <code>orchidsd.github.io</code> 仓库的 <strong>Contents: Read and write</strong></li>
+<li>博客仓库 → Settings → Secrets and variables → Actions → New repository secret</li>
+<li>Name：<code>PAT</code>，Value：粘贴 token</li>
+</ol>
+<h2 id="六验证全链路">六、验证全链路</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 手动触发一次</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> workflow</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -R</span><span style="color:#9ECBFF"> orchidsd/hexo-blog</span><span style="color:#9ECBFF"> friend-check.yml</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 观察 run</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> list</span><span style="color:#79B8FF"> -R</span><span style="color:#9ECBFF"> orchidsd/hexo-blog</span><span style="color:#79B8FF"> --workflow</span><span style="color:#9ECBFF"> friend-check.yml</span></span></code></pre>
+<p><strong>期望输出</strong>：</p>
+<ul>
+<li><code>check</code> job：<code>classified: 11, normal: 11, lost: 0</code></li>
+<li>无变化时 <code>deploy</code> skipped；有变化时 <code>deploy</code> success</li>
+<li>线上 <code>/link/</code> 24 小时内反映新分组</li>
+</ul>
+<h2 id="七真实故障演练记录">七、真实故障演练记录</h2>
+<p>这套流程在实战中跑通过完整闭环：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Akilar 真实失联（后端判定）</td>
+<td>✅ 自动移入失联组</td>
+</tr>
+<tr>
+<td>模拟 kmar.top 失效</td>
+<td>✅ 自动移入失联组</td>
+</tr>
+<tr>
+<td>kmar.top 恢复</td>
+<td>✅ 自动移回正常组</td>
+</tr>
+<tr>
+<td>Akilar 恢复（后端 error=0）</td>
+<td>✅ 自动归位</td>
+</tr>
+<tr>
+<td>deploy 推送 orchidsd.github.io</td>
+<td>✅ <code>deploy: update friends (auto)</code></td>
+</tr>
+<tr>
+<td>CF 自动上线</td>
+<td>✅ 部署历史可见</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>下一篇：朋友圈页面的“失联 N”统计是怎么显示出来的。</p>
+</blockquote>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/31/friend-circle-series/03-backend/" data-astro-cid-q4eo6rhm>← 后端部署：hexo-circle-of-friends（Vercel + fork）</a><a class="next" href="/2026/07/31/friend-circle-series/05-lost-contact-stat/" data-astro-cid-q4eo6rhm>朋友圈失联统计显示（前端注入） →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

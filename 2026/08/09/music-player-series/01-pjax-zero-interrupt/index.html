@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/music-player-series/01-pjax-zero-interrupt/"><!-- Primary Meta Tags --><title>anzhiyu 音乐播放器深度魔改系列（一）：切页零中断——pjax 下播放不暂停的架构与补丁</title><meta name="description" content="翻页即断歌的终极解法：audio 常驻 body 隐藏容器 + patch APlayer 原型三件套（destroy/initAudio/setAudio）+ sessionStorage 状态恢复，实现 pjax 切页声音零中断。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/music-player-series/01-pjax-zero-interrupt/"><meta property="og:title" content="anzhiyu 音乐播放器深度魔改系列（一）：切页零中断——pjax 下播放不暂停的架构与补丁"><meta property="og:description" content="翻页即断歌的终极解法：audio 常驻 body 隐藏容器 + patch APlayer 原型三件套（destroy/initAudio/setAudio）+ sessionStorage 状态恢复，实现 pjax 切页声音零中断。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>anzhiyu 音乐播放器深度魔改系列（一）：切页零中断——pjax 下播放不暂停的架构与补丁</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T06:30:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头翻页断歌是博客播放器的原罪">开头：翻页断歌，是博客播放器的原罪</h2>
+<p>博客是 pjax 单页应用：点文章链接，只换 <code>body-wrap</code> 内容。音乐播放器装在 <code>body-wrap</code> 之外，本不该受影响——但主题的 pjax 逻辑会 <code>destroy()</code> 所有非 fixed 的 APlayer，而 APlayer 的 <code>destroy()</code> 会执行 <code>pause() + audio.src=""</code>。<strong>结果：每点一次链接，歌就断了。</strong></p>
+<p>更隐蔽的坑在后面：等你想修复时，会发现定制版 APlayer（<code>lrcType: 0</code>）的模板顶层类不是 <code>.aplayer</code> 而是 <code>.aplayer-body</code>，主题自带的实例判断全部失效——修一个 bug 撞出三个坑。本文给出最终方案：<strong>audio 常驻 body 隐藏容器 + 原型三连 patch + 状态落盘恢复</strong>。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：pjax 切页（含整页刷新）时，左下角播放器<strong>歌曲不断、进度不丢、播放状态保持</strong>，声音零中断。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> anzhiyu v1.7.1+（定制版 APlayer，代码在 <code>themes/anzhiyu/source/js/utils.js</code>）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 懂 pjax 生命周期（<code>pjax:send</code> / <code>pjax:complete</code>）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 可本地起 <code>hexo s</code> 验证</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>为什么「容器放对位置」还不够，必须 patch APlayer 原型</li>
+<li>destroy / initAudio / setAudio 三个 patch 各自解决什么问题</li>
+<li>sessionStorage 双保险恢复策略</li>
+<li>无 patch 能力时的降级方案（无缝接力）</li>
+</ol>
+<hr>
+<h2 id="step-1audio-常驻-body-隐藏容器">Step 1：audio 常驻 body 隐藏容器</h2>
+<blockquote>
+<p>目的：让 audio 元素脱离 pjax 重建范围，任何翻页都不碰它。做完这步翻页时声音不会因元素销毁而断。</p>
+</blockquote>
+<p><strong>操作：</strong> 在 <code>utils.js</code> 的 <code>initNavMusicPlayer()</code> 开头，把 audio 挂到 body 下的隐藏容器（而非播放器 UI 壳内）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// audio 常驻 body 隐藏容器：pjax 只重建 UI 壳，audio 永不脱离/暂停（与首页右上角播放器同架构）</span></span>
+<span class="line"><span style="color:#F97583">let</span><span style="color:#E1E4E8"> persistentHolder </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"nav-music-persistent-container"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">persistentHolder) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  persistentHolder </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">createElement</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"div"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  persistentHolder.id </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "nav-music-persistent-container"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  persistentHolder.style.display </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "none"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  document.body.</span><span style="color:#B392F0">appendChild</span><span style="color:#E1E4E8">(persistentHolder);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>播放器 UI 壳（<code>#nav-music-aplayer</code>）在 pjax 时被替换，但 audio 元素挂在 body 下的隐藏容器中——pjax 只清 <code>body-wrap</code>，碰不到它。</p>
+<p><strong>预期输出：</strong> 控制台 <code>document.querySelector("#nav-music-persistent-container audio")</code> 存在且不随翻页消失；翻页瞬间声音不中断。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：容器必须挂在 <code>document.body</code> 而非播放器容器内，否则 pjax 重建容器时 audio 一起被销毁。</p>
+</blockquote>
+<hr>
+<h2 id="step-2needinit-判断避免每次翻页重建">Step 2：needInit 判断——避免每次翻页重建</h2>
+<blockquote>
+<p>目的：pjax 回来后判断「已有实例就直接复用，别重建」。做完这步切页不再重新初始化播放器。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// pjax 不替换 body-wrap 外的 nav-music-aplayer（容器在 body-wrap 之外），</span></span>
+<span class="line"><span style="color:#6A737D">// 定制版 APlayer 模板无 .aplayer 顶层类（为 aplayer-body），这里用 _aplayer 实例判断：</span></span>
+<span class="line"><span style="color:#6A737D">// 已有实例则无需重建 → 切页零中断（audio 常驻持续播放）</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> needInit</span><span style="color:#F97583"> =</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">navMusicAplayer._aplayer </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">navMusicAplayer.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">".aplayer, .aplayer-body"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">needInit) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p><strong>预期输出：</strong> 切页后播放器不闪烁重建，歌曲进度连续。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查（本系列第一个大坑）</strong>：原判断只查 <code>.aplayer</code>，而定制版模板顶层类是 <code>.aplayer-body</code>——导致 <code>needInit</code> <strong>恒真</strong>，每次 pjax 都重建播放器、audio 被替换、声音中断。两个类必须都判断。</p>
+</blockquote>
+<hr>
+<h2 id="step-3patch-aplayer-原型三件套">Step 3：patch APlayer 原型三件套</h2>
+<blockquote>
+<p>目的：让「新实例」复用常驻 audio，且销毁时不带走它。做完这步翻页时声音真正连续。</p>
+</blockquote>
+<p><strong>操作：</strong> 在构造新 APlayer 之前，patch 原型（仅当容器 id 为 <code>nav-music-aplayer</code> 时生效，不影响站内其它播放器）：</p>
+<p><strong>a) destroy patch</strong>——原版 destroy 会 <code>pause() + src=""</code>，patch 后只清 UI 壳：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#79B8FF">APlayer</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">prototype</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">destroy</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> () {</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.container </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.container.id </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> "nav-music-aplayer"</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.paused </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.timer </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.timer.</span><span style="color:#B392F0">destroy</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.container.innerHTML </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">    this</span><span style="color:#E1E4E8">.events </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.events.trigger </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.events.</span><span style="color:#B392F0">trigger</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"destroy"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> origDestroy.</span><span style="color:#B392F0">call</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>b) initAudio patch</strong>——新实例的 <code>this.audio</code> 直接指向常驻 audio，并把 audioEvents 监听重绑到常驻元素上，最后恢复音量：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 关键：新 APlayer 复用 persistent 容器里的常驻 audio（而非新建），</span></span>
+<span class="line"><span style="color:#6A737D">// 同曲时跳过 src 赋值，避免重载与 loadedmetadata→seek(0) 复位进度</span></span></code></pre>
+<p><strong>c) setAudio patch</strong>——同 URL 时直接 return，跳过 src 赋值：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 复用后 src 相同不重载 → 播放零中断</span></span></code></pre>
+<blockquote>
+<p>完整实现见 <code>utils.js:865-920</code>。构造结束在 <code>finally</code> 里<strong>立即还原原型</strong>（<code>utils.js:934-937</code>），避免污染后续实例。</p>
+</blockquote>
+<p><strong>预期输出：</strong> 切页后 audio 仍是同一个元素（<code>persistentHolder.querySelector("audio") === navPlayer.audio</code>），声音无缝。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：patch 忘还原会导致全局 APlayer 行为异常（站内其它播放器也被带偏）；<code>destroy</code> patch 必须保留事件触发，否则主题的销毁监听失效。</p>
+</blockquote>
+<hr>
+<h2 id="step-4实例级-seek-覆写--进度恢复">Step 4：实例级 seek 覆写 + 进度恢复</h2>
+<blockquote>
+<p>目的：防 <code>loadedmetadata → seek(0)</code> 把进度复位，并恢复切页前的播放进度。做完这步进度不归零。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (canReuse </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> oldState) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> origSeekFn</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> navPlayer.seek.</span><span style="color:#B392F0">bind</span><span style="color:#E1E4E8">(navPlayer);</span></span>
+<span class="line"><span style="color:#E1E4E8">  navPlayer.</span><span style="color:#B392F0">seek</span><span style="color:#F97583"> =</span><span style="color:#F97583"> function</span><span style="color:#E1E4E8"> (</span><span style="color:#FFAB70">time</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (time </span><span style="color:#F97583">===</span><span style="color:#79B8FF"> 0</span><span style="color:#F97583"> &amp;&amp;</span><span style="color:#79B8FF"> this</span><span style="color:#E1E4E8">.audio </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#F97583"> !</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.audio.paused) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 防 loadedmetadata→seek(0) 复位</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#B392F0"> origSeekFn</span><span style="color:#E1E4E8">(time);</span></span>
+<span class="line"><span style="color:#E1E4E8">  };</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (oldState.time </span><span style="color:#F97583">&gt;</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (navPlayer.audio.readyState </span><span style="color:#F97583">&gt;=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">) navPlayer.audio.currentTime </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> oldState.time;</span></span>
+<span class="line"><span style="color:#F97583">    else</span><span style="color:#E1E4E8"> navPlayer.audio.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"loadedmetadata"</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { navPlayer.audio.currentTime </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> oldState.time; }, { once: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (oldState.playing </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">navPlayer.audio.paused) { </span><span style="color:#6A737D">/* setUIPlaying + bar.set("played") */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#F97583">  else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (oldState.playing) { navPlayer.</span><span style="color:#B392F0">play</span><span style="color:#E1E4E8">(); }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期输出：</strong> 切页后歌曲从断点继续（而非从 0 重来）。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：APlayer 的 <code>seek()</code> 有 <code>duration=NaN</code> 钳制会归零，所以直接操作 <code>audio.currentTime</code> 绕过，<code>readyState</code> 不够就等 <code>loadedmetadata</code>。</p>
+</blockquote>
+<hr>
+<h2 id="step-5状态双保险pjaxsend--pagehide-落盘">Step 5：状态双保险——pjax:send + pagehide 落盘</h2>
+<blockquote>
+<p>目的：pjax 切页走内存恢复，<strong>整页刷新</strong>走 sessionStorage 恢复。做完这步刷新页面也能续播。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">window._navMusicStateBound) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  window._navMusicStateBound </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  document.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pjax:send"</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* 内存捕获 url/time/playing */</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">  window.</span><span style="color:#B392F0">addEventListener</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"pagehide"</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (persistentAudio </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> persistentAudio.currentSrc) {</span></span>
+<span class="line"><span style="color:#F97583">      try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        sessionStorage.</span><span style="color:#B392F0">setItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"navMusicState"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">({ url, time, playing }));</span></span>
+<span class="line"><span style="color:#E1E4E8">      } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (e) {}</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#6A737D">// 恢复：读即删（一次性）</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> raw</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sessionStorage.</span><span style="color:#B392F0">getItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"navMusicState"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (raw) { savedState </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(raw); sessionStorage.</span><span style="color:#B392F0">removeItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"navMusicState"</span><span style="color:#E1E4E8">); }</span></span></code></pre>
+<p><strong>预期输出：</strong> 刷新页面后，播放器自动续播原歌曲、原进度、原播放状态。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：sessionStorage 读取后必须 removeItem，否则每次刷新都重复恢复（或覆盖新选择）；<code>pagehide</code> 用 <code>beforeunload</code> 也行但 pagehide 兼容性更稳。</p>
+</blockquote>
+<hr>
+<h2 id="step-6降级无-initaudio-时的无缝接力">Step 6（降级）：无 initAudio 时的无缝接力</h2>
+<blockquote>
+<p>目的：老版本 APlayer 没有 <code>initAudio</code> 函数时，退回「新 audio 后台预载 → 就绪接力」。做完这步兼容老版本。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>utils.js:966-992</code> 已实现：新 audio <code>loadeddata</code> 后 <code>seek(oldState.time) → play()</code>，再停旧 audio 并清空 persistentAudio（<code>handOver</code> 防重复，2.5s 兜底超时强制接力）。</p>
+<p><strong>预期输出：</strong> 无法复用实例时，切页瞬间短暂静音但播放不从头开始（接力续播）。</p>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = 切页零中断达成。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 播放中连续翻 5 个页面，声音无中断</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 切页后歌曲进度不归零（从断点继续）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 刷新页面（F5）后自动续播原曲</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>persistentHolder.querySelector("audio")</code> 全程是同一元素</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 站内其它 APlayer（音乐馆页）行为正常（patch 未污染）</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>切页还是断歌</td>
+<td>needInit 恒真 / 容器位置不对</td>
+<td>补 <code>.aplayer-body</code> 判断；audio 挂 body 隐藏容器</td>
+</tr>
+<tr>
+<td>进度每次都归零</td>
+<td>loadedmetadata→seek(0) 复位</td>
+<td>实例级 seek 覆写拦截 0 值</td>
+</tr>
+<tr>
+<td>刷新后不续播</td>
+<td>pagehide 没落盘 / 被误删</td>
+<td>检查 <code>_navMusicStateBound</code> 防重复绑定与读后删除</td>
+</tr>
+<tr>
+<td>音乐馆播放器被影响</td>
+<td>patch 污染全局</td>
+<td>构造后 finally 还原原型</td>
+</tr>
+<tr>
+<td>播放器闪烁重建</td>
+<td>实例判断失效</td>
+<td><code>_aplayer</code> + <code>.aplayer, .aplayer-body</code> 双判断</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>切页零中断的本质是「<strong>audio 归 body，UI 归 pjax</strong>」：常驻容器保活 + 原型 patch 保链接 + 落盘保状态。核心要点：</p>
+<ol>
+<li><strong>架构第一</strong>：audio 挂 body 隐藏容器，pjax 天然不碰</li>
+<li><strong>patch 要克制</strong>：只对 <code>nav-music-aplayer</code> 容器生效，用完还原</li>
+<li><strong>双保险</strong>：pjax 内存态 + pagehide 落盘，覆盖刷新场景</li>
+<li><strong>降级兜底</strong>：老版本无 initAudio 时走预载接力</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/music-player-series/02-lyrics/">下一篇：歌词功能——URL 歌词、自绘滚动与竞态根治</a></li>
+<li><a href="https://github.com/orchidsd/hexo-blog/blob/main/tools/edge-verify/verify-music-continuity.js">验证工具 tools/edge-verify/verify-music-continuity.js</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/music-player-series/00-series-index/" data-astro-cid-q4eo6rhm>← anzhiyu 音乐播放器深度魔改系列 — 导航目录</a><a class="next" href="/2026/08/09/music-player-series/02-lyrics/" data-astro-cid-q4eo6rhm>anzhiyu 音乐播放器深度魔改系列（二）：歌词功能——URL 歌词、自绘滚动与竞态根治 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/00-series-index/"><!-- Primary Meta Tags --><title>友链朋友圈自动化全攻略 — 系列导航与总体架构</title><meta name="description" content="友链朋友圈自动化全攻略系列 7 篇文章导航目录，涵盖总体架构、友链页与 link.yml、朋友圈搭建、后端部署、自动检测与自动部署、失联统计显示、踩坑排查的完整知识体系。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/00-series-index/"><meta property="og:title" content="友链朋友圈自动化全攻略 — 系列导航与总体架构"><meta property="og:description" content="友链朋友圈自动化全攻略系列 7 篇文章导航目录，涵盖总体架构、友链页与 link.yml、朋友圈搭建、后端部署、自动检测与自动部署、失联统计显示、踩坑排查的完整知识体系。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>友链朋友圈自动化全攻略 — 系列导航与总体架构</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-31T00:00:00.000Z" data-astro-cid-q4eo6rhm>2026-07-31</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="系列简介">系列简介</h2>
+<p>本系列完整复盘一套 <strong>「友链 + 朋友圈」自治运维体系</strong>：从友链页搭建、朋友圈接入，到后端每 3 小时自动抓取文章、每日自动检测友链存活状态、自动归类失联友链、自动构建部署上线。<strong>全流程零人工干预</strong>。</p>
+<blockquote>
+<p><strong>适用版本</strong>：Hexo 7.x + anzhiyu v1.7.1+ + hexo-circle-of-friends fork
+<strong>配套仓库</strong>：</p>
+<ul>
+<li><code>hexo-blog</code>（源码：link.yml、主题 Patch、friend-check 脚本、GitHub Actions）</li>
+<li><code>orchidsd.github.io</code>（部署产物，由 <code>hexo d</code> / Actions 推送）</li>
+<li><code>hexo-circle-of-friends</code>（fork，Vercel 后端 + 定时爬虫）</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="️-总体架构先看这张图">🏗️ 总体架构（先看这张图）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>┌──────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│                     weiguang.eu.org                          │</span></span>
+<span class="line"><span>│               Cloudflare Workers（Git 集成自动构建）          │</span></span>
+<span class="line"><span>│         orchidsd.github.io 仓库 main 分支 → 静态资产          │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│  /link/  友链页（多分组 + 失联组）                            │</span></span>
+<span class="line"><span>│  /fcircle/ 朋友圈（文章流 + 失联统计）                        │</span></span>
+<span class="line"><span>└──────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>                        ▲ 浏览器直接访问</span></span>
+<span class="line"><span>┌──────────────────────┴──────────────────────────────────────┐</span></span>
+<span class="line"><span>│                    hexo-blog（源码仓库）                      │</span></span>
+<span class="line"><span>│  source/_data/link.yml  友链数据源                            │</span></span>
+<span class="line"><span>│  friend-check/friend-check.js  存活检测脚本                    │</span></span>
+<span class="line"><span>│  .github/workflows/friend-check.yml  每日自动检测+部署         │</span></span>
+<span class="line"><span>│  themes/anzhiyu/  主题 Patch（flink.pug / fcircle.pug）       │</span></span>
+<span class="line"><span>└──────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>        │ hexo d / Actions 构建                                │</span></span>
+<span class="line"><span>        ▼</span></span>
+<span class="line"><span>┌──────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│              orchidsd.github.io（部署产物）                   │</span></span>
+<span class="line"><span>│  public/ 静态文件（link / fcircle / js 等）                   │</span></span>
+<span class="line"><span>└──────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>        │ CF Git 集成轮询 → 自动构建                            │</span></span>
+<span class="line"><span>        ▼</span></span>
+<span class="line"><span>        weiguang.eu.org（线上）</span></span>
+<span class="line"><span>┌──────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│            hexo-circle-of-friends（fork 后端）                │</span></span>
+<span class="line"><span>│  Vercel 托管 · GitHub Actions 每 3 小时全量重爬               │</span></span>
+<span class="line"><span>│  data.db（SQLite）→ API：/all /friend /randompost ...         │</span></span>
+<span class="line"><span>│  关键字段：error（能否抓取到文章）                            │</span></span>
+<span class="line"><span>└──────────────────────────────────────────────────────────────┘</span></span>
+<span class="line"><span>        │ 朋友圈页 fetch                                       │</span></span>
+<span class="line"><span>        ▼</span></span>
+<span class="line"><span>    fc.weiguang.eu.org（Vercel API）</span></span></code></pre>
+<p><strong>三套系统的分工</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th>角色</th>
+<th>更新频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hexo-blog</code></td>
+<td>一切配置与数据的源头</td>
+<td>人工/自动检测</td>
+</tr>
+<tr>
+<td><code>orchidsd.github.io</code></td>
+<td>静态产物，供 CF 读取</td>
+<td><code>hexo d</code> / Actions 推送</td>
+</tr>
+<tr>
+<td>CF Worker</td>
+<td>线上 CDN + 构建</td>
+<td>Git 集成自动</td>
+</tr>
+<tr>
+<td>Vercel 后端</td>
+<td>抓取友链文章 + 失联判定</td>
+<td>每 3 小时</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="-全系列目录">📚 全系列目录</h2>
+<table>
+<thead>
+<tr>
+<th>篇</th>
+<th>标题</th>
+<th>核心内容</th>
+<th>阅读建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>①</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/01-link-page/">友链页搭建与 link.yml 深度解析</a></td>
+<td><code>link.yml</code> 分组结构、<code>lost_contact</code> 失联组、<code>flink.pug</code> 抓取修复、三种卡片样式、与官方友链页差异</td>
+<td><strong>必读</strong>，友链是一切的数据源</td>
+</tr>
+<tr>
+<td><strong>②</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/02-fcircle-page/">朋友圈（FriendCircle）页面搭建</a></td>
+<td>bundle 引入、<code>fcircle.pug</code>、<code>FC_API_URL</code>、随机文章、隐藏管理面板入口</td>
+<td>想让页面有“朋友圈”先看这篇</td>
+</tr>
+<tr>
+<td><strong>③</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/03-backend/">后端部署：hexo-circle-of-friends（Vercel + fork）</a></td>
+<td>fork、定时爬虫、<code>data.db</code>、API 端点、<code>error</code> 字段语义</td>
+<td>理解“谁在检测失联”必读</td>
+</tr>
+<tr>
+<td><strong>④</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/04-auto-detect-deploy/">友链自动检测与自动部署（GitHub Actions）</a></td>
+<td><code>friend-check</code> workflow、后端 error 驱动的检测脚本、3 个坑、PAT Secret</td>
+<td>全自动化的核心，<strong>强烈推荐</strong></td>
+</tr>
+<tr>
+<td><strong>⑤</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/05-lost-contact-stat/">朋友圈失联统计显示（前端注入）</a></td>
+<td><code>lost-contact-stat.js</code>、<code>/all</code> 的 <code>error_num</code>、样式注入、随状态自动显隐</td>
+<td>让“失联”在朋友圈页可见</td>
+</tr>
+<tr>
+<td><strong>⑥</strong></td>
+<td><a href="https://blog.weiguang.eu.org/2026/07/31/friend-circle-series/06-troubleshooting/">踩坑与问题排查实录</a></td>
+<td>guoqi 重定向、CF 522、管理面板登录、Actions IP 屏蔽、TLS 误报</td>
+<td>遇到问题先翻这篇</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="-学习路径推荐">🎯 学习路径推荐</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>想搭友链页</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>① link.yml 与友链页 ──► 数据源 + 页面</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ├─► ② 朋友圈页面（按需）</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ├─► ③ 后端部署 ──► ④ 自动检测部署（自动化闭环）</span></span>
+<span class="line"><span>    │                        │</span></span>
+<span class="line"><span>    │                        ▼</span></span>
+<span class="line"><span>    │                   ⑤ 失联统计显示</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>⑥ 踩坑排查（随时查阅）</span></span></code></pre>
+<hr>
+<h2 id="️-核心文件速查表">🛠️ 核心文件速查表</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source/_data/link.yml</code></td>
+<td>友链数据源（正常组 + <code>lost_contact: true</code> 失联组）</td>
+</tr>
+<tr>
+<td><code>source/link/index.md</code></td>
+<td>友链页入口（<code>type: link</code>）</td>
+</tr>
+<tr>
+<td><code>source/fcircle/index.md</code></td>
+<td>朋友圈页入口（<code>type: fcircle</code>）</td>
+</tr>
+<tr>
+<td><code>themes/anzhiyu/layout/includes/page/flink.pug</code></td>
+<td>友链页模板（失联块抓取属性）</td>
+</tr>
+<tr>
+<td><code>themes/anzhiyu/layout/includes/page/fcircle.pug</code></td>
+<td>朋友圈模板（API 注入 + 失联统计脚本）</td>
+</tr>
+<tr>
+<td><code>source/js/friends/friend-circle-default.custom.js</code></td>
+<td>朋友圈前端（lite 自写版，内置失联统计）</td>
+</tr>
+<tr>
+<td><code>friend-check/friend-check.js</code></td>
+<td>存活检测脚本（读后端 error）</td>
+</tr>
+<tr>
+<td><code>.github/workflows/friend-check.yml</code></td>
+<td>每日自动检测 + 自动部署</td>
+</tr>
+<tr>
+<td><code>.github/workflows/CI.yml</code>（fork 仓库）</td>
+<td>后端每 3 小时爬取</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="-核心机制一句话">🔑 核心机制一句话</h2>
+<blockquote>
+<p><strong>「友链是否失联，由后端说了算。」</strong></p>
+<p>后端（Vercel）每 3 小时尝试抓取每个友链的 RSS 文章，抓不到就置 <code>error=1</code>。
+前端朋友圈读 <code>/all</code> 的 <code>error_num</code> 显示“失联 N”；
+GitHub Actions 每日读 <code>/friend</code> 的 <code>error</code> 字段，自动把失联友链移入 <code>link.yml</code> 的失联组，再自动构建部署。</p>
+</blockquote>
+<p>这套设计把 <strong>「检测」</strong> 和 <strong>「展示」</strong> 完全解耦：检测交给能访问所有友链站点的后端环境，展示层只是消费它的结论。</p>
+<hr>
+<h2 id="-系列设计初衷">💡 系列设计初衷</h2>
+<blockquote>
+<p><strong>「把一次完整的问题排查，沉淀成可复用的自动化体系。」</strong></p>
+</blockquote>
+<ul>
+<li>每篇 <strong>配置在前、原理在中、避坑在尾</strong>，既可当教程读，也可当字典查</li>
+<li>所有改动基于 anzhiyu 主题覆盖层，升级主题只需重打 Patch</li>
+<li>自动化链路全部跑通并用真实故障验证过（失效→归位→自动部署）</li>
+<li>篇幅务实，每篇都有可直接照抄的配置</li>
+</ul>
+<hr>
+<h2 id="-反馈与共建">📬 反馈与共建</h2>
+<ul>
+<li>发现错误/过时配置 → 评论留言</li>
+<li>有新玩法/新坑 → 评论区分享</li>
+<li>想扩展 → 对照系列结构定位对应篇章</li>
+</ul>
+<hr>
+<p><strong>收藏本文 = 拿到全系列导航地图。</strong><br>
+祝你的友链永不“失联”、朋友圈常“活跃”！🚀</p>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/30/hexo-anzhiyu-series/05-link-footer-misc/" data-astro-cid-q4eo6rhm>← Hexo anzhiyu 主题深度定制系列（五）：友链页顶部区块、底部版权栏、音乐页/时钟/代码注入等杂项配置</a><a class="next" href="/2026/07/31/friend-circle-series/01-link-page/" data-astro-cid-q4eo6rhm>友链页搭建与 link.yml 深度解析 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

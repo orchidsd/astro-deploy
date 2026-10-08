@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/waline-series/02-worker-proxy/"><!-- Primary Meta Tags --><title>Waline 评论图片上传系列（二）：Cloudflare Worker 代理上传——Token 移出前端与安全防护</title><meta name="description" content="把图床 Token 从静态产物里彻底移除：Cloudflare Worker 代理上传（Origin 白名单 + KV 限流 + 渠道白名单 + 类型大小限制），前端弹窗让访客自选渠道，localStorage 记忆。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/waline-series/02-worker-proxy/"><meta property="og:title" content="Waline 评论图片上传系列（二）：Cloudflare Worker 代理上传——Token 移出前端与安全防护"><meta property="og:description" content="把图床 Token 从静态产物里彻底移除：Cloudflare Worker 代理上传（Origin 白名单 + KV 限流 + 渠道白名单 + 类型大小限制），前端弹窗让访客自选渠道，localStorage 记忆。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>Waline 评论图片上传系列（二）：Cloudflare Worker 代理上传——Token 移出前端与安全防护</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T09:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头f12-就能抄走你的图床-token">开头：F12 就能抄走你的图床 Token</h2>
+<p>上一版评论上传（见系列第一篇），Token 直接写在前端配置里。一次安全检查发现：<code>hexo generate</code> 的产物里，<code>Authorization: Bearer imgbed_xxx</code> 明晃晃地躺在 JS 中——<strong>任何访客打开 DevTools 就能抄走</strong>，然后拿你的图床当免费存储。</p>
+<p>整改方案：加一层 <strong>Cloudflare Worker 代理</strong>。浏览器只碰代理域名，图床 Token 存 Worker Secret，前端零凭据；顺带把 Origin 白名单、IP 限流、渠道白名单、类型/大小限制全部做进代理层，图床从「裸奔」变「全副武装」。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：评论图片上传改为「浏览器 → Worker → 图床」三跳架构，Token 不再出现在任何静态产物中，且 Worker 具备来源校验、限流、白名单、类型大小检查；访客还能弹窗自选上传渠道。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 已有 Cloudflare 账号与图床（ImgBed/Telegraph/Discord 等渠道）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 已掌握 <code>npx wrangler</code> 部署（login/deploy/secret）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 已读完系列第一篇（理解 v1 缺陷）</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>Worker 代理的完整防护矩阵（来源/限流/白名单/类型大小）</li>
+<li><code>GET /channels</code> 动态下发渠道的设计</li>
+<li>前端弹窗自选渠道 + localStorage 记忆</li>
+<li>Secret 管理：Token 只存在于 Worker 环境</li>
+</ol>
+<hr>
+<h2 id="step-1worker-骨架与-corsorigin-校验">Step 1：Worker 骨架与 CORS/Origin 校验</h2>
+<blockquote>
+<p>目的：只有你的博客域名能调用上传接口。做完这步别人站点的请求会被 403。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>workers/waline-image-upload/src/index.js</code> 主流程：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 读 Origin 生成 CORS 头</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> origin</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> request.headers.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Origin"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#9ECBFF"> ""</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> corsHeaders</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> createCorsHeaders</span><span style="color:#E1E4E8">(origin, env.</span><span style="color:#79B8FF">ALLOWED_ORIGIN</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (request.method </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> "OPTIONS"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Response</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">null</span><span style="color:#E1E4E8">, { status: </span><span style="color:#79B8FF">204</span><span style="color:#E1E4E8">, headers: corsHeaders });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Origin 校验：白名单外 403</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (origin </span><span style="color:#F97583">!==</span><span style="color:#E1E4E8"> env.</span><span style="color:#79B8FF">ALLOWED_ORIGIN</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#B392F0"> jsonError</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"来源不受允许"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">403</span><span style="color:#E1E4E8">, corsHeaders);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> createCorsHeaders</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">origin</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">allowedOrigin</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> headers</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Headers</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#9ECBFF">    'Access-Control-Allow-Headers'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'Content-Type'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'Access-Control-Allow-Methods'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'POST, GET, OPTIONS'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'Cache-Control'</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'no-store'</span><span style="color:#E1E4E8">, Vary: </span><span style="color:#9ECBFF">'Origin'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (origin </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> allowedOrigin) headers.</span><span style="color:#B392F0">set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Access-Control-Allow-Origin'</span><span style="color:#E1E4E8">, allowedOrigin);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> headers;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期输出：</strong> 用 <code>curl.exe -H "Origin: https://evil.com"</code> 调用返回 403；博客域名调用正常。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：<code>ALLOWED_ORIGIN</code> 必须在 <code>wrangler.toml</code> 的 <code>[vars]</code> 里配（<code>https://blog.weiguang.eu.org</code>）；空 Origin（服务端调用）会被 403，这是设计如此。</p>
+</blockquote>
+<hr>
+<h2 id="step-2类型大小白名单--文件名清洗">Step 2：类型/大小白名单 + 文件名清洗</h2>
+<blockquote>
+<p>目的：只收图片，禁一切可执行/脚本文件。做完这步 SVG/EXE/超大文件全被拦。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> ALLOWED_MEDIA_TYPES</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Set</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">'image/jpeg'</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">'image/png'</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">'image/webp'</span><span style="color:#E1E4E8">,</span><span style="color:#9ECBFF">'image/gif'</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> CHANNEL_MAX_UPLOAD_BYTES</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  telegram: </span><span style="color:#79B8FF">20</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">, cfr2: </span><span style="color:#79B8FF">100</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">, s3: </span><span style="color:#79B8FF">100</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  discord: </span><span style="color:#79B8FF">25</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">, huggingface: </span><span style="color:#79B8FF">20</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">, webdav: </span><span style="color:#79B8FF">100</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> MEBIBYTE</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 流程中：Content-Length 超限提前 413 → 解析 formData → file 存在性校验</span></span>
+<span class="line"><span style="color:#6A737D">// → 类型白名单 415 → file.size===0 或超 maxUploadBytes 413</span></span>
+<span class="line"><span style="color:#6A737D">// → sanitizeFileName：扩展名按 MIME 映射、非法字符转 -、截断 80 字符、兜底 waline-image</span></span></code></pre>
+<p><strong>预期输出：</strong> 上传 <code>.svg</code> 返回 415（<strong>禁 SVG 防可执行 SVG 同源利用</strong>）；100MB+ 文件 413；中文名/特殊字符文件名被清洗成安全名。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：大小校验<strong>两层</strong>——先看 <code>Content-Length</code>（请求体预检）再看 <code>file.size</code>（实际文件），只有后者会漏超大分块；文件名清洗必须基于 MIME 映射扩展名而非用户原始文件名（<code>shell.jpg</code> → <code>.png</code> 等伪装会被纠正）。</p>
+</blockquote>
+<hr>
+<h2 id="step-3kv-限流8-次分ip">Step 3：KV 限流（8 次/分/IP）</h2>
+<blockquote>
+<p>目的：防止脚本刷图床。做完这步单 IP 超额返回 429。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>wrangler.toml</code> 绑定 KV：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#E1E4E8">[[</span><span style="color:#B392F0">kv_namespaces</span><span style="color:#E1E4E8">]]</span></span>
+<span class="line"><span style="color:#E1E4E8">  binding = </span><span style="color:#9ECBFF">"UPLOAD_RATE_LIMIT"</span></span>
+<span class="line"><span style="color:#E1E4E8">  id = </span><span style="color:#9ECBFF">"d801271bbd9f4f789afdfd5b151f1ae9"</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 窗口对齐到分钟；IP 取 CF-Connecting-IP</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> key</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> `upload:${</span><span style="color:#E1E4E8">clientIp</span><span style="color:#9ECBFF">}:${</span><span style="color:#E1E4E8">windowStart</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> currentCount</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> Number</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">await</span><span style="color:#E1E4E8"> env.</span><span style="color:#79B8FF">UPLOAD_RATE_LIMIT</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(key)) </span><span style="color:#F97583">||</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (currentCount </span><span style="color:#F97583">&gt;=</span><span style="color:#E1E4E8"> maxRequests) {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#B392F0"> jsonError</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'上传过于频繁，请稍后再试'</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">429</span><span style="color:#E1E4E8">, corsHeaders, { </span><span style="color:#9ECBFF">'Retry-After'</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">...</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">await</span><span style="color:#E1E4E8"> env.</span><span style="color:#79B8FF">UPLOAD_RATE_LIMIT</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">put</span><span style="color:#E1E4E8">(key, </span><span style="color:#B392F0">String</span><span style="color:#E1E4E8">(currentCount </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">), { expirationTtl: windowSeconds </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 60</span><span style="color:#E1E4E8"> });</span></span></code></pre>
+<p><strong>预期输出：</strong> 1 分钟内同 IP 第 9 次上传返回 429 + <code>Retry-After</code> 头。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：KV 计数非强一致（最终一致），极限并发下可能漏几次——README 建议叠加 Cloudflare WAF Rate Limiting 双保险；<code>expirationTtl</code> 要比窗口多留 60s，防窗口边界清零。</p>
+</blockquote>
+<hr>
+<h2 id="step-4上游代理转发token-在-secret">Step 4：上游代理转发（Token 在 Secret）</h2>
+<blockquote>
+<p>目的：浏览器零凭据，图床 Token 只存在于 Worker 环境变量。做完这步静态产物里搜不到任何 Token。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 上游 fetch：headers 仅 Authorization: Bearer ${env.IMG_HOST_TOKEN}</span></span>
+<span class="line"><span style="color:#6A737D">// Token 来自 wrangler secret put IMG_HOST_TOKEN，不进代码、不进静态产物</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> upstream</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">createUpstreamUrl</span><span style="color:#E1E4E8">(env, uploadOptions), {</span></span>
+<span class="line"><span style="color:#E1E4E8">  method: </span><span style="color:#9ECBFF">"POST"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  headers: { Authorization: </span><span style="color:#9ECBFF">`Bearer ${</span><span style="color:#E1E4E8">env</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">IMG_HOST_TOKEN</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#E1E4E8">  body: upstreamFormData,</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">upstream.ok) </span><span style="color:#F97583">return</span><span style="color:#B392F0"> jsonError</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"图床服务暂时不可用"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">502</span><span style="color:#E1E4E8">, corsHeaders);</span></span>
+<span class="line"><span style="color:#6A737D">// 透传上游响应，Cache-Control: no-store</span></span></code></pre>
+<p>部署三步：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> wrangler</span><span style="color:#9ECBFF"> login</span></span>
+<span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> wrangler</span><span style="color:#9ECBFF"> deploy</span><span style="color:#6A737D">                  # 自动创建绑定 KV</span></span>
+<span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> wrangler</span><span style="color:#9ECBFF"> secret</span><span style="color:#9ECBFF"> put</span><span style="color:#9ECBFF"> IMG_HOST_TOKEN</span><span style="color:#6A737D">   # 输入图床 Token（不落盘代码）</span></span>
+<span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> wrangler</span><span style="color:#9ECBFF"> deploy</span></span></code></pre>
+<p><strong>预期输出：</strong> <code>git grep -r "imgbed_" .</code> 全仓库零结果；上传链路正常。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：Secret 与 <code>[vars]</code> 的差别——Secret 适合<strong>密文</strong>（Token），vars 适合<strong>非敏感配置</strong>（白名单/限额），别把 Token 写进 wrangler.toml（会被提交）；<code>wrangler.toml</code> 在 <code>.gitignore</code> 里的 <code>.wrangler</code> 本地缓存不影响。</p>
+</blockquote>
+<hr>
+<h2 id="step-5get-channels-动态下发渠道">Step 5：<code>GET /channels</code> 动态下发渠道</h2>
+<blockquote>
+<p>目的：前端不硬编码渠道，从 Worker 实时获取白名单与限额。做完这步换渠道不用改前端。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// GET /channels：遍历 ALLOWED_UPLOAD_CHANNELS，每项输出 {name, maxUploadBytes}</span></span>
+<span class="line"><span style="color:#6A737D">// 并计算 default（DEFAULT_UPLOAD_CHANNEL 在白名单内则用它，否则取第一个）</span></span>
+<span class="line"><span style="color:#6A737D">// 返回 { channels, default }</span></span></code></pre>
+<p><code>wrangler.toml</code> 里渠道配置：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#E1E4E8">DEFAULT_UPLOAD_CHANNEL = </span><span style="color:#9ECBFF">"discord"</span></span>
+<span class="line"><span style="color:#E1E4E8">ALLOWED_UPLOAD_CHANNELS = </span><span style="color:#9ECBFF">"telegram,cfr2,s3,discord,huggingface,webdav"</span></span></code></pre>
+<p>渠道大小上限（服务端二次校验，<code>maxUploadBytes = Math.min(MAX_UPLOAD_BYTES, channelLimit)</code>——全局上限只能压低不能突破渠道上限）：</p>
+<table>
+<thead>
+<tr>
+<th>渠道</th>
+<th>单文件上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>telegram</td>
+<td>20 MiB</td>
+</tr>
+<tr>
+<td>discord</td>
+<td>10~25 MiB</td>
+</tr>
+<tr>
+<td>huggingface</td>
+<td>20 MiB</td>
+</tr>
+<tr>
+<td>cfr2 / s3 / webdav</td>
+<td>100 MiB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>预期输出：</strong> <code>curl.exe https://upload.weiguang.eu.org/channels</code> 返回渠道列表 + 各渠道限额 + default。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：<code>uploadChannel</code> 不在白名单返回 400「不支持该上传渠道」；命名渠道（<code>channelName</code>）要走 <code>ALLOWED_CHANNEL_NAMES</code> 二次白名单，别漏。</p>
+</blockquote>
+<hr>
+<h2 id="step-6前端弹窗自选渠道">Step 6：前端弹窗自选渠道</h2>
+<blockquote>
+<p>目的：访客上传时弹窗选渠道（可记忆），脚本未加载时兜底默认渠道。做完这步交互闭环。</p>
+</blockquote>
+<p><strong>操作：</strong> <code>source/js/waline-image-uploader.js</code>（IIFE）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> API_BASE</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'https://upload.weiguang.eu.org'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> STORAGE_KEY</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'waline-upload-channel'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// fetchChannels()：模块级缓存 cachedChannels，GET /channels 失败返回 null（前端不硬编码渠道）</span></span>
+<span class="line"><span style="color:#6A737D">// createModal(channels, defaultChannel)：全屏遮罩 + role="dialog" 面板</span></span>
+<span class="line"><span style="color:#6A737D">//   - localStorage 记忆存在且在白名单内 → 初始选中，否则用 default</span></span>
+<span class="line"><span style="color:#6A737D">//   - 单项显示渠道名 + 「单文件上限 X MiB」，主题色高亮</span></span>
+<span class="line"><span style="color:#6A737D">//   - Esc 键取消（keydown）/ 点击遮罩取消（e.target === overlay）</span></span>
+<span class="line"><span style="color:#6A737D">// upload(file, channel)：POST /upload?uploadChannel=channel，校验 data?.[0]?.src</span></span>
+<span class="line"><span style="color:#6A737D">// walineUploader(file)：/channels 失败或空列表 → 兜底 localStorage 记忆 || 'discord' 直接上传</span></span>
+<span class="line"><span style="color:#E1E4E8">window.WalineImageUploader </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> walineUploader;   </span><span style="color:#6A737D">// 暴露全局</span></span></code></pre>
+<p><code>_config.anzhiyu.yml</code> 的 <code>waline.imageUploader</code> 改为「全局函数优先 + 兜底」：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">imageUploader</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">&gt;</span></span>
+<span class="line"><span style="color:#9ECBFF">  (file) =&gt; {</span></span>
+<span class="line"><span style="color:#9ECBFF">    if (window.WalineImageUploader) return window.WalineImageUploader(file);</span></span>
+<span class="line"><span style="color:#9ECBFF">    // 兜底：脚本未加载时直接 fetch upload.weiguang.eu.org/upload?uploadChannel=discord</span></span>
+<span class="line"><span style="color:#9ECBFF">  }</span></span></code></pre>
+<p>注入：<code>inject.bottom</code> 加 <code>&lt;script src="/js/waline-image-uploader.js"&gt;&lt;/script&gt;</code>。</p>
+<p><strong>预期输出：</strong> 访客点上传 → 弹窗选渠道（记忆上次选择）→ 上传成功；禁 JS 环境走兜底 discord 渠道。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：弹窗遮罩 <code>z-index</code> 要足够高（<code>2147483000</code>）压过评论区；localStorage 记忆必须在白名单校验<strong>之后</strong>再采纳（渠道下线了还记忆会死循环 400）；上传错误要 throw <code>data?.error</code> 给 Waline 显示。</p>
+</blockquote>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = Worker 代理上线。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>git grep "imgbed_\|Bearer sk-"</code> 全仓库零凭据</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 非本站 Origin 调用 403</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> SVG/超大文件被 415/413 拦截</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 同 IP 1 分钟第 9 次上传 429</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>/channels</code> 返回渠道白名单</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 访客上传弹窗可选渠道，刷新后记忆上次选择</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 评论图片上传端到端可用</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>别人能调我的上传接口吗</td>
+<td>Origin 白名单没配/失效</td>
+<td>确认 ALLOWED_ORIGIN 正确且非空</td>
+</tr>
+<tr>
+<td>Token 在哪</td>
+<td>静态产物搜不到</td>
+<td>Token 只在 Worker Secret，<code>wrangler secret put</code></td>
+</tr>
+<tr>
+<td>上传大图失败</td>
+<td>渠道限额</td>
+<td>看 /channels 返回的 maxUploadBytes，选 100MiB 渠道</td>
+</tr>
+<tr>
+<td>429 太频繁</td>
+<td>限流触发</td>
+<td>KV 计数过期前等窗口；或调整 RATE_LIMIT_MAX_REQUESTS</td>
+</tr>
+<tr>
+<td>前端弹窗不出现</td>
+<td>uploader.js 没注入</td>
+<td>确认 inject.bottom 注入 + 路径正确</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>Worker 代理把「图床裸奔」升级为「全防护上传网关」。核心要点：</p>
+<ol>
+<li><strong>零凭据前端</strong>：Token 只在 Worker Secret，静态产物无泄漏面</li>
+<li><strong>防护矩阵</strong>：Origin 白名单（来源）+ KV 限流（频率）+ 渠道白名单（去向）+ 类型大小（内容）</li>
+<li><strong>动态下发</strong>：<code>/channels</code> 让前端跟着白名单走，配置热更新</li>
+<li><strong>双保险</strong>：KV 限流 + WAF Rate Limiting；前端弹窗 + 兜底默认渠道</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/waline-series/01-imgbed-upload/">上一篇：Waline + CloudFlare ImgBed 图床配置（整理版）</a></li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/waline-series/00-series-index/">系列导航</a></li>
+<li><a href="https://github.com/orchidsd/hexo-blog/tree/main/workers/waline-image-upload">Worker 源码 workers/waline-image-upload/</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/waline-series/01-imgbed-upload/" data-astro-cid-q4eo6rhm>← Waline 评论图片上传系列（一）：Waline + CloudFlare ImgBed 图床配置（整理版）</a><a class="next" href="/2026/08/09/writing-tutorial-methodology/" data-astro-cid-q4eo6rhm>优质教程博文怎么写？从 web.dev、DigitalOcean、freeCodeCamp 提炼的编写结构与流程 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

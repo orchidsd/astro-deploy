@@ -1,0 +1,545 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/30/hexo-anzhiyu-series/06-deployment-cicd/"><!-- Primary Meta Tags --><title>Hexo anzhiyu 主题深度定制系列（六）：部署与 CI/CD 终极指南</title><meta name="description" content="从零搭建生产级部署流水线：GitHub Actions + Cloudflare Pages 双轨部署、Secrets 安全注入敏感配置、Git Submodule 主题升级流程、配置文件自动化生成、常见坑与排错清单。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/30/hexo-anzhiyu-series/06-deployment-cicd/"><meta property="og:title" content="Hexo anzhiyu 主题深度定制系列（六）：部署与 CI/CD 终极指南"><meta property="og:description" content="从零搭建生产级部署流水线：GitHub Actions + Cloudflare Pages 双轨部署、Secrets 安全注入敏感配置、Git Submodule 主题升级流程、配置文件自动化生成、常见坑与排错清单。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（六）：部署与 CI/CD 终极指南</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-30T06:00:00.000Z" data-astro-cid-q4eo6rhm>2026-07-30</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="前言">前言</h2>
+<p>博客写得再好，部署不稳定、密钥泄露、升级主题炸配置，全白搭。本文把**「从推送到上线」**的全链路标准化，形成可复制、可审计、可回滚的工程化流程。</p>
+<hr>
+<h2 id="1-架构总览">1. 架构总览</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>┌─────────────┐     push/main      ┌──────────────────┐</span></span>
+<span class="line"><span>│  本地/IDE   │ ─────────────────► │  GitHub Repo     │</span></span>
+<span class="line"><span>│  (开发)     │                    │  (源码 + Submodule)│</span></span>
+<span class="line"><span>└─────────────┘                    └────────┬─────────┘</span></span>
+<span class="line"><span>                                             │</span></span>
+<span class="line"><span>                    ┌────────────────────────┼────────────────────────┐</span></span>
+<span class="line"><span>                    ▼                        ▼                        ▼</span></span>
+<span class="line"><span>           ┌───────────────┐         ┌───────────────┐         ┌───────────────┐</span></span>
+<span class="line"><span>           │ GitHub Pages  │         │ Cloudflare    │         │  Docker/      │</span></span>
+<span class="line"><span>           │ (免费、原生)  │         │ Pages (边缘、  │         │  自建服务器   │</span></span>
+<span class="line"><span>           │               │         │  自定义域名、  │         │  (可选)       │</span></span>
+<span class="line"><span>           │               │         │  WAF、Analytics)│         │               │</span></span>
+<span class="line"><span>           └───────────────┘         └───────────────┘         └───────────────┘</span></span></code></pre>
+<p><strong>本项目采用双轨</strong>：GitHub Pages 作主线，Cloudflare Pages 做加速 + WAF + 自定义域名 <code>blog.weiguang.eu.org</code>。</p>
+<hr>
+<h2 id="2-仓库结构与-submodule-管理">2. 仓库结构与 Submodule 管理</h2>
+<h3 id="21-目录结构">2.1 目录结构</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>blog/</span></span>
+<span class="line"><span>├── .github/workflows/deploy.yml</span></span>
+<span class="line"><span>├── _config.yml</span></span>
+<span class="line"><span>├── _config.anzhiyu.yml          # 主配置（含占位符）</span></span>
+<span class="line"><span>├── _config.anzhiyu.local.yml    # 本地密钥（.gitignore）</span></span>
+<span class="line"><span>├── package.json</span></span>
+<span class="line"><span>├── scaffolds/post.md</span></span>
+<span class="line"><span>├── source/</span></span>
+<span class="line"><span>│   ├── _posts/...</span></span>
+<span class="line"><span>│   ├── _data/album.yml</span></span>
+<span class="line"><span>│   └── css/custom.css</span></span>
+<span class="line"><span>├── themes/</span></span>
+<span class="line"><span>│   └── anzhiyu/                 # Git Submodule → anzhiyu-c/hexo-theme-anzhiyu@v1.7.1</span></span>
+<span class="line"><span>└── scripts/                     # 自定义 Hexo 扩展（可选）</span></span></code></pre>
+<h3 id="22-初始化-submodule">2.2 初始化 Submodule</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> blog</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> submodule</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -b</span><span style="color:#9ECBFF"> v1.7.1</span><span style="color:#79B8FF"> --depth=1</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  https://github.com/anzhiyu-c/hexo-theme-anzhiyu.git</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "chore: add anzhiyu theme submodule v1.7.1"</span></span></code></pre>
+<h3 id="23-升级主题标准流程">2.3 升级主题标准流程</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. 进入 submodule</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> fetch</span><span style="color:#79B8FF"> --tags</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> v1.8.0</span><span style="color:#6A737D">   # 或最新 tag</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. 回根目录，提交指针更新</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ../..</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> themes/anzhiyu</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "chore: upgrade anzhiyu to v1.8.0"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. 对比 merge_config.js 新增默认值，同步到 _config.anzhiyu.yml</span></span>
+<span class="line"><span style="color:#6A737D">#    推荐用 `git diff themes/anzhiyu@&lt;old&gt;..@&lt;new&gt; -- scripts/events/merge_config.js`</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. 本地验证</span></span>
+<span class="line"><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> clean</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> g</span><span style="color:#E1E4E8"> &amp;&amp; </span><span style="color:#B392F0">hexo</span><span style="color:#9ECBFF"> s</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 5. 推送触发 CI</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span></span></code></pre>
+<blockquote>
+<p><strong>黄金法则</strong>：<strong>从不直接修改 <code>themes/anzhiyu/</code> 下文件</strong>，所有定制在博客仓库层（覆盖文件、脚本注入、配置合并）。</p>
+</blockquote>
+<hr>
+<h2 id="3-github-actions-工作流githubworkflowsdeployyml">3. GitHub Actions 工作流（<code>.github/workflows/deploy.yml</code>）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages &amp; Cloudflare Pages</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">  workflow_dispatch</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">permissions</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  contents</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">read</span></span>
+<span class="line"><span style="color:#85E89D">  pages</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">write</span></span>
+<span class="line"><span style="color:#85E89D">  id-token</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">write</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">concurrency</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  group</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">pages</span></span>
+<span class="line"><span style="color:#85E89D">  cancel-in-progress</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  build</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#6A737D">      # 1️⃣ Checkout + Submodule</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout repository</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          submodules</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">recursive</span></span>
+<span class="line"><span style="color:#85E89D">          fetch-depth</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">      # 2️⃣ Setup Node + pnpm（corepack）</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup Node</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'20'</span></span>
+<span class="line"><span style="color:#85E89D">          cache</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'pnpm'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Enable corepack</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">corepack enable</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">pnpm install --frozen-lockfile</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">      # 3️⃣ 生成最终配置（Secrets 注入）</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Generate final config</span></span>
+<span class="line"><span style="color:#85E89D">        id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">gen-config</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          cat &gt; _config.anzhiyu.yml &lt;&lt;'EOF'</span></span>
+<span class="line"><span style="color:#9ECBFF">          # 基础配置（从模板读取或直接内联）</span></span>
+<span class="line"><span style="color:#9ECBFF">          # 这里演示用 heredoc，实际建议用 node/脚本渲染模板</span></span>
+<span class="line"><span style="color:#9ECBFF">          LA:</span></span>
+<span class="line"><span style="color:#9ECBFF">            enable: true</span></span>
+<span class="line"><span style="color:#9ECBFF">            ck: "${{ secrets.LA_CK }}"</span></span>
+<span class="line"><span style="color:#9ECBFF">            LingQueMonitorID: "${{ secrets.LA_LINGQUE_ID }}"</span></span>
+<span class="line"><span style="color:#9ECBFF">          post_head_ai_description:</span></span>
+<span class="line"><span style="color:#9ECBFF">            enable: true</span></span>
+<span class="line"><span style="color:#9ECBFF">            gptName: Yoki</span></span>
+<span class="line"><span style="color:#9ECBFF">            mode: openai</span></span>
+<span class="line"><span style="color:#9ECBFF">            openai:</span></span>
+<span class="line"><span style="color:#9ECBFF">              apiUrl: "https://api.agnes-ai.cn/v1/chat/completions"</span></span>
+<span class="line"><span style="color:#9ECBFF">              model: agnes-2.0-flash</span></span>
+<span class="line"><span style="color:#9ECBFF">              apiKey: "${{ secrets.OPENAI_API_KEY }}"</span></span>
+<span class="line"><span style="color:#9ECBFF">              systemPrompt: "你是一个文章摘要助手，请使用简洁的中文概括以下文章的核心内容，不超过200字"</span></span>
+<span class="line"><span style="color:#9ECBFF">              maxTokens: 500</span></span>
+<span class="line"><span style="color:#9ECBFF">              temperature: 0.7</span></span>
+<span class="line"><span style="color:#9ECBFF">          # ... 其他非敏感配置直接从模板 cp</span></span>
+<span class="line"><span style="color:#9ECBFF">          EOF</span></span>
+<span class="line"><span style="color:#9ECBFF">          # 合并非敏感模板</span></span>
+<span class="line"><span style="color:#9ECBFF">          cat _config.anzhiyu.template.yml &gt;&gt; _config.anzhiyu.yml</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">      # 4️⃣ Build</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Build Hexo</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">pnpm run build</span><span style="color:#6A737D">   # = hexo clean &amp;&amp; hexo generate</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">      # 5️⃣ Upload artifact</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Upload Pages artifact</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/upload-pages-artifact@v3</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./public</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  deploy-github</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">build</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">github-pages</span></span>
+<span class="line"><span style="color:#85E89D">      url</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ steps.deployment.outputs.page_url }}</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages</span></span>
+<span class="line"><span style="color:#85E89D">        id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">deployment</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/deploy-pages@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  deploy-cloudflare</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">build</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    if</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">github.ref == 'refs/heads/main'</span><span style="color:#6A737D">  # 仅主分支同步 CF</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Download artifact</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/download-artifact@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">github-pages</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./public</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to Cloudflare Pages</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">cloudflare/pages-action@v1</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          apiToken</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.CF_API_TOKEN }}</span></span>
+<span class="line"><span style="color:#85E89D">          accountId</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.CF_ACCOUNT_ID }}</span></span>
+<span class="line"><span style="color:#85E89D">          projectName</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">weiguang-blog</span></span>
+<span class="line"><span style="color:#85E89D">          directory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./public</span></span>
+<span class="line"><span style="color:#85E89D">          gitHubToken</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.GITHUB_TOKEN }}</span></span></code></pre>
+<h3 id="31-关键点解析">3.1 关键点解析</h3>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>关键配置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>actions/checkout@v4</code></td>
+<td><code>submodules: recursive</code></td>
+<td><strong>必须</strong>，否则 <code>themes/anzhiyu</code> 为空目录</td>
+</tr>
+<tr>
+<td><code>corepack enable</code></td>
+<td>Node 20+ 自带</td>
+<td>锁定 <code>pnpm</code> 版本，避免 <code>packageManager</code> 不匹配</td>
+</tr>
+<tr>
+<td><code>Generate final config</code></td>
+<td>Secrets → <code>_config.anzhiyu.yml</code></td>
+<td><strong>敏感值绝不进仓库</strong>，CI 时动态拼装</td>
+</tr>
+<tr>
+<td><code>upload-pages-artifact</code></td>
+<td><code>path: ./public</code></td>
+<td>标准化产物，供 <code>deploy-pages</code> + CF 复用</td>
+</tr>
+<tr>
+<td><code>cloudflare/pages-action</code></td>
+<td><code>directory: ./public</code></td>
+<td>同一产物双端部署，零二次构建</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-secrets-管理策略">4. Secrets 管理策略</h2>
+<h3 id="41-github-repository-settings--secrets-and-variables--actions">4.1 GitHub Repository Settings → Secrets and variables → Actions</h3>
+<table>
+<thead>
+<tr>
+<th>Secret 名</th>
+<th>用途</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LA_CK</code></td>
+<td>51.LA 站点 ID</td>
+<td>51.LA 后台</td>
+</tr>
+<tr>
+<td><code>LA_LINGQUE_ID</code></td>
+<td>雀灵监控 ID</td>
+<td>51.LA 雀灵</td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>AI 摘要 API Key</td>
+<td>Agnes/OneAPI 控制台</td>
+</tr>
+<tr>
+<td><code>CF_API_TOKEN</code></td>
+<td>Cloudflare Pages 部署权限</td>
+<td>CF Dashboard → API Tokens → Edit Cloudflare Pages</td>
+</tr>
+<tr>
+<td><code>CF_ACCOUNT_ID</code></td>
+<td>CF 账号 ID</td>
+<td>CF Dashboard 右侧栏</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-本地开发同步_configanzhiyulocalyml">4.2 本地开发同步（<code>_config.anzhiyu.local.yml</code>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#6A737D"># .gitignore 已忽略</span></span>
+<span class="line"><span style="color:#85E89D">LA</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  ck</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"3QhmqTheuIeNJHd9"</span></span>
+<span class="line"><span style="color:#85E89D">  LingQueMonitorID</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"3QhhHg4cYX5by8v8"</span></span>
+<span class="line"><span style="color:#85E89D">post_head_ai_description</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  openai</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    apiKey</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"sk-xxx"</span></span></code></pre>
+<p><strong>本地脚本合并</strong>（<code>scripts/merge-config.js</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> fs</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'fs'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> yaml</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'js-yaml'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> base</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> yaml.</span><span style="color:#B392F0">load</span><span style="color:#E1E4E8">(fs.</span><span style="color:#B392F0">readFileSync</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'_config.anzhiyu.template.yml'</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> local</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> fs.</span><span style="color:#B392F0">existsSync</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'_config.anzhiyu.local.yml'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  ?</span><span style="color:#E1E4E8"> yaml.</span><span style="color:#B392F0">load</span><span style="color:#E1E4E8">(fs.</span><span style="color:#B392F0">readFileSync</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'_config.anzhiyu.local.yml'</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#F97583">  :</span><span style="color:#E1E4E8"> {};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> deepMerge</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">target</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">source</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> key</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> Object.</span><span style="color:#B392F0">keys</span><span style="color:#E1E4E8">(source)) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (source[key] </span><span style="color:#F97583">instanceof</span><span style="color:#B392F0"> Object</span><span style="color:#F97583"> &amp;&amp;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">Array.</span><span style="color:#B392F0">isArray</span><span style="color:#E1E4E8">(source[key])) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      target[key] </span><span style="color:#F97583">=</span><span style="color:#B392F0"> deepMerge</span><span style="color:#E1E4E8">(target[key] </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> {}, source[key]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">      target[key] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> source[key];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> target;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> final</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> deepMerge</span><span style="color:#E1E4E8">(base, local);</span></span>
+<span class="line"><span style="color:#E1E4E8">fs.</span><span style="color:#B392F0">writeFileSync</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'_config.anzhiyu.yml'</span><span style="color:#E1E4E8">, yaml.</span><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(final));</span></span>
+<span class="line"><span style="color:#E1E4E8">console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'✅ _config.anzhiyu.yml generated'</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><code>package.json</code> 脚本：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "scripts"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "config"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"node scripts/merge-config.js"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "dev"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"npm run config &amp;&amp; hexo s"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "build"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"npm run config &amp;&amp; hexo clean &amp;&amp; hexo g"</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>本地 <code>npm run dev</code> 自动合并；CI 用上述 heredoc 方式或同脚本跑一遍。</p>
+</blockquote>
+<hr>
+<h2 id="5-自定义域名--cloudflare-加速">5. 自定义域名 + Cloudflare 加速</h2>
+<h3 id="51-dns-设置cloudflare-托管域名">5.1 DNS 设置（Cloudflare 托管域名）</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>内容</th>
+<th>代理状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNAME</td>
+<td>@</td>
+<td><code>weiguang-blog.pages.dev</code></td>
+<td>🟠 Proxied</td>
+</tr>
+<tr>
+<td>CNAME</td>
+<td>www</td>
+<td><code>weiguang-blog.pages.dev</code></td>
+<td>🟠 Proxied</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-cloudflare-pages-绑定">5.2 Cloudflare Pages 绑定</h3>
+<ol>
+<li>Pages 项目 → Custom domains → Add <code>blog.weiguang.eu.org</code> + <code>www.weiguang.eu.org</code></li>
+<li>SSL/TLS → Full (strict)</li>
+<li>Rules → Cache Everything + Edge TTL 1 年（静态资源）</li>
+<li>WAF → Managed Ruleset → OWASP Top 10 开启</li>
+</ol>
+<h3 id="53-github-pages-同步可选">5.3 GitHub Pages 同步（可选）</h3>
+<ul>
+<li>Settings → Pages → Custom domain 填 <code>blog.weiguang.eu.org</code></li>
+<li>Enforce HTTPS ✅</li>
+<li><strong>注意</strong>：GitHub Pages 只能做源站，国内访问走 CF 边缘更快。</li>
+</ul>
+<hr>
+<h2 id="6-常见坑与排错清单">6. 常见坑与排错清单</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>排查步骤</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>themes/anzhiyu</code> 为空</td>
+<td>CI 日志 <code>Checkout</code> 步骤是否有 <code>Submodules: 1</code></td>
+<td>加 <code>submodules: recursive</code></td>
+</tr>
+<tr>
+<td>部署后 404 / 样式丢失</td>
+<td><code>public/</code> 目录结构、<code>_config.yml</code> <code>url/root</code></td>
+<td><code>url: https://blog.weiguang.eu.org</code> <code>root: /</code></td>
+</tr>
+<tr>
+<td>AI 摘要不显示 / 报 401</td>
+<td>CI 日志 <code>Generate final config</code> 产物 <code>_config.anzhiyu.yml</code> 是否含 <code>apiKey</code></td>
+<td>Secrets 名拼写、权限、Key 有效期</td>
+</tr>
+<tr>
+<td>51.LA 无数据</td>
+<td>Network 面板 <code>js-sdk-pro.min.js</code> 是否 200、<code>LA.init</code> 参数</td>
+<td><code>hashMode: true</code> 配合 pjax、<code>autoTrack: true</code></td>
+</tr>
+<tr>
+<td>Cloudflare Pages 部署失败</td>
+<td><code>CF_API_TOKEN</code> 权限、<code>CF_ACCOUNT_ID</code> 正确性</td>
+<td>Token 需 <code>Account.Cloudflare Pages.Edit</code> 权限</td>
+</tr>
+<tr>
+<td>pjax 后统计/摘要失效</td>
+<td><code>pjax:complete</code> 回调里重新初始化</td>
+<td><code>window.statistics51aInit?.()</code> / <code>AIAbstract.init?.()</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-回滚与灰度发布">7. 回滚与灰度发布</h2>
+<h3 id="71-github-pages-回滚">7.1 GitHub Pages 回滚</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 回退到上一次成功部署的 commit</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> revert</span><span style="color:#F97583"> &lt;</span><span style="color:#9ECBFF">bad-commi</span><span style="color:#E1E4E8">t</span><span style="color:#F97583">&gt;</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span></span>
+<span class="line"><span style="color:#6A737D"># 或直接在 Actions 页面 Re-run 旧的成功 workflow</span></span></code></pre>
+<h3 id="72-cloudflare-pages-回滚">7.2 Cloudflare Pages 回滚</h3>
+<p>Dashboard → Deployments → 点击旧版本 → <strong>Promote to production</strong>（秒级生效）。</p>
+<h3 id="73-灰度可选">7.3 灰度（可选）</h3>
+<ul>
+<li>Cloudflare Workers + <code>cookie</code> 分流 10% 流量到 <code>preview.weiguang.eu.org</code></li>
+<li>或 GitHub Pages <code>gh-pages</code> 分支 + <code>preview</code> 子域名</li>
+</ul>
+<hr>
+<h2 id="8-维护清单每月每次升级">8. 维护清单（每月/每次升级）</h2>
+<table>
+<thead>
+<tr>
+<th>频率</th>
+<th>动作</th>
+<th>命令/操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>每周</strong></td>
+<td>依赖更新</td>
+<td><code>pnpm update -i</code> → <code>pnpm audit fix</code></td>
+</tr>
+<tr>
+<td><strong>每月</strong></td>
+<td>主题升级</td>
+<td>见 §2.3 标准流程</td>
+</tr>
+<tr>
+<td><strong>每月</strong></td>
+<td>检查 51.LA / 雀灵 后台无报警</td>
+<td>登录看板</td>
+</tr>
+<tr>
+<td><strong>每季度</strong></td>
+<td>旋转 API Keys（AI、51.LA）</td>
+<td>重新生成 → 更新 Secrets → 触发部署</td>
+</tr>
+<tr>
+<td><strong>每次发文</strong></td>
+<td>验证 AI 摘要生成、相册图片加载</td>
+<td>本地 <code>hexo s</code> + 线上打开</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-一键初始化新环境脚本scriptsbootstrapsh">9. 一键初始化新环境脚本（<code>scripts/bootstrap.sh</code>）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#79B8FF">set</span><span style="color:#79B8FF"> -euo</span><span style="color:#9ECBFF"> pipefail</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "🚀 Bootstrapping Hexo anzhiyu blog..."</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 1. Corepack + pnpm</span></span>
+<span class="line"><span style="color:#B392F0">corepack</span><span style="color:#9ECBFF"> enable</span></span>
+<span class="line"><span style="color:#B392F0">corepack</span><span style="color:#9ECBFF"> prepare</span><span style="color:#9ECBFF"> pnpm@9.12.0</span><span style="color:#79B8FF"> --activate</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. Install deps</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> --frozen-lockfile</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. Submodule</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> submodule</span><span style="color:#9ECBFF"> update</span><span style="color:#79B8FF"> --init</span><span style="color:#79B8FF"> --recursive</span><span style="color:#79B8FF"> --depth=1</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. Local config (copy template if missing)</span></span>
+<span class="line"><span style="color:#E1E4E8">[ </span><span style="color:#F97583">-f</span><span style="color:#E1E4E8"> _config.anzhiyu.local.yml ] </span><span style="color:#F97583">||</span><span style="color:#B392F0"> cp</span><span style="color:#9ECBFF"> _config.anzhiyu.local.example.yml</span><span style="color:#9ECBFF"> _config.anzhiyu.local.yml</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "⚠️  Please edit _config.anzhiyu.local.yml with your secrets"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 5. Generate final config</span></span>
+<span class="line"><span style="color:#B392F0">node</span><span style="color:#9ECBFF"> scripts/merge-config.js</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 6. Verify build</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> build</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "✅ All set! Run 'pnpm run dev' to start local server."</span></span></code></pre>
+<p>新成员/新机器：<code>git clone --recursive ... &amp;&amp; ./scripts/bootstrap.sh</code> 即可跑通。</p>
+<hr>
+<h2 id="10-完整文件清单本系列涉及">10. 完整文件清单（本系列涉及）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>blog/</span></span>
+<span class="line"><span>├── .github/workflows/deploy.yml</span></span>
+<span class="line"><span>├── _config.yml</span></span>
+<span class="line"><span>├── _config.anzhiyu.yml</span></span>
+<span class="line"><span>├── _config.anzhiyu.template.yml   # 非敏感基础配置</span></span>
+<span class="line"><span>├── _config.anzhiyu.local.yml      # 本地敏感配置（.gitignore）</span></span>
+<span class="line"><span>├── scripts/</span></span>
+<span class="line"><span>│   ├── merge-config.js            # 本地合并</span></span>
+<span class="line"><span>│   └── bootstrap.sh               # 一键初始化</span></span>
+<span class="line"><span>├── scaffolds/post.md</span></span>
+<span class="line"><span>├── source/</span></span>
+<span class="line"><span>│   ├── _posts/...</span></span>
+<span class="line"><span>│   ├── _data/album.yml</span></span>
+<span class="line"><span>│   ├── link/index.md</span></span>
+<span class="line"><span>│   ├── music/index.md</span></span>
+<span class="line"><span>│   ├── pixiv/index.md</span></span>
+<span class="line"><span>│   ├── copyright/index.md</span></span>
+<span class="line"><span>│   ├── css/custom.css</span></span>
+<span class="line"><span>│   └── js/custom.js</span></span>
+<span class="line"><span>└── themes/anzhiyu/                # Submodule</span></span></code></pre>
+<hr>
+<h2 id="11-系列总结">11. 系列总结</h2>
+<table>
+<thead>
+<tr>
+<th>篇</th>
+<th>核心主题</th>
+<th>关键产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td>环境版本、目录结构、升级策略</td>
+<td><code>bootstrap.sh</code>、Submodule 流程</td>
+</tr>
+<tr>
+<td>②</td>
+<td>51.LA 双 SDK + AI 摘要三模式</td>
+<td><code>statistics51aInit()</code>、<code>AIAbstract</code> 类、24h 缓存</td>
+</tr>
+<tr>
+<td>③</td>
+<td>相册系统 Type 1/2/3 + Pixiv 实战</td>
+<td><code>album.yml</code> 数据结构、三个 mixin、入口页</td>
+</tr>
+<tr>
+<td>④</td>
+<td>友链/版权/音乐/时钟/注入/欢迎语/无障碍/动效</td>
+<td><code>linkPageTop</code>、<code>footerBar.cc</code>、<code>inject</code>、<code>greetingBox</code></td>
+</tr>
+<tr>
+<td>⑤</td>
+<td><strong>部署流水线、Secrets、Submodule 升级、回滚</strong></td>
+<td><code>deploy.yml</code>、Secrets 表、回滚 SOP</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-后续进阶方向todo">12. 后续进阶方向（TODO）</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> <strong>Waline 评论迁移</strong>（邮件通知 + 表情包 + 反垃圾）</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>Algolia DocSearch</strong> 全站中文分词搜索</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>图片自动 WebP + Cloudflare Images</strong> 零成本图床</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>PWA + Service Worker</strong> 离线阅读 + 更新提示</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>多语言 i18n</strong>（中英日）切换</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>自动化发布脚本</strong>：<code>npm run new:post "标题"</code> → 自动封面图、AI 摘要、推送到 GitHub</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>全系列源码同步更新在</strong>：<code>https://github.com/yourname/blog</code><br>
+欢迎 Star、Fork、提 Issue 交流！</p>
+</blockquote>
+<hr>
+<p><strong>至此，Hexo anzhiyu 深度定制六部曲完结撒花 🎉</strong><br>
+愿你的博客既好看、又好用、还好维护！</p>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/30/hexo-anzhiyu-config-guide/" data-astro-cid-q4eo6rhm>← Hexo anzhiyu 主题配置与定制全记录</a><a class="next" href="/2026/07/30/hexo-anzhiyu-series/05-link-footer-misc/" data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（五）：友链页顶部区块、底部版权栏、音乐页/时钟/代码注入等杂项配置 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

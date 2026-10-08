@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/12/blog-maintenance-ci-comments/"><!-- Primary Meta Tags --><title>博客工程维护复盘：CI 收敛与评论图片放大双 Bug 修复实录</title><meta name="description" content="一次集中维护：CI 技术栈与凭证统一（friend-check 并入 deploy.yml 单一构建链）、Lighthouse 门禁从 warn 收紧为 error、图片上传 Worker 下线 webdav 渠道，以及评论系统两个镜像 Bug——Waline 评论区图片点不动、Twikoo 评论图片放大两次的完整根因与修复。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/12/blog-maintenance-ci-comments/"><meta property="og:title" content="博客工程维护复盘：CI 收敛与评论图片放大双 Bug 修复实录"><meta property="og:description" content="一次集中维护：CI 技术栈与凭证统一（friend-check 并入 deploy.yml 单一构建链）、Lighthouse 门禁从 warn 收紧为 error、图片上传 Worker 下线 webdav 渠道，以及评论系统两个镜像 Bug——Waline 评论区图片点不动、Twikoo 评论图片放大两次的完整根因与修复。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>博客工程维护复盘：CI 收敛与评论图片放大双 Bug 修复实录</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-12T00:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-12</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头一次都做一遍的维护巡检">开头：一次「都做一遍」的维护巡检</h2>
+<p>博客上线大半年，CI 和评论系统一直是「能跑就行」的状态。直到某天收到一份维护建议清单，逐条核对才发现问题比想象的多：</p>
+<ul>
+<li>两个 workflow 技术栈分裂：<code>friend-check.yml</code> 用 Node 20 + <code>npm install --no-save js-yaml</code>，<code>deploy.yml</code> 用 Node 22 + <code>npm ci</code>，部署还分 PAT 和 SSH key 两套凭证</li>
+<li>Lighthouse 门禁四个断言全是 <code>warn</code>（黄灯），压不住任何问题</li>
+<li>图片上传 Worker 挂着 6 个渠道，其中 webdav 早已无人使用</li>
+<li>评论系统两个镜像 Bug：Waline 评论区图片<strong>点不动</strong>（没接 fancybox），Twikoo 评论图片<strong>点一次放大两次</strong>（服务端 lightbox 和主题 fancybox 叠加）</li>
+</ul>
+<p>本文完整记录这轮收敛与修复：<strong>CI 怎么从「三套班子」收敛成一条链，以及两个评论图片 Bug 为什么是镜像的、怎么修。</strong></p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：CI 统一为单一构建链（Node 22 + <code>npm ci</code> + SSH key）、Lighthouse 断言从 warn 收紧为 error、上传渠道下线 webdav、两个评论图片放大 Bug 修复并验证上线。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 已有 <code>deploy.yml</code>（Node 22 + <code>npm ci</code> + SSH deploy key）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 已有 <code>friend-check.yml</code>（定时巡检友链并自动 push 分类结果）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 已有 <code>quality.yml</code> + <code>lighthouserc.json</code>（四道质量门禁，详见本系列第⑨篇）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 双评论系统：Twikoo（envId） + Waline（serverURL）</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>从 workflow 依赖关系里发现并删除冗余 deploy job</li>
+<li>把运行时依赖从「传递依赖侥幸可用」改成显式声明</li>
+<li>评论系统「服务端配置 × 前端行为」耦合的排查方法论</li>
+</ol>
+<hr>
+<h2 id="part-1ci-收敛三套班子合成一条链">Part 1：CI 收敛——三套班子合成一条链</h2>
+<h3 id="11-问题盘点friend-check-和-deploy-各干各的">1.1 问题盘点：friend-check 和 deploy 各干各的</h3>
+<p><code>friend-check.yml</code> 原本是这样：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup Node</span></span>
+<span class="line"><span style="color:#85E89D">  uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">  with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'20'</span><span style="color:#6A737D">          # ← deploy.yml 用 22，这里用 20</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install js-yaml</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm install --no-save js-yaml</span><span style="color:#6A737D">   # ← 为什么？见 1.2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages</span><span style="color:#6A737D">     # ← 重复的部署 job！</span></span>
+<span class="line"><span style="color:#85E89D">  env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    PAT</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.PAT }}</span><span style="color:#6A737D">        # ← 第二套凭证</span></span>
+<span class="line"><span style="color:#85E89D">  run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">    cd public</span></span>
+<span class="line"><span style="color:#9ECBFF">    git init &amp;&amp; git branch -m main</span></span>
+<span class="line"><span style="color:#9ECBFF">    git add -A</span></span>
+<span class="line"><span style="color:#9ECBFF">    git commit -m "deploy: update friends (auto)"</span></span>
+<span class="line"><span style="color:#9ECBFF">    git push -f "https://x-access-token:${PAT}@github.com/orchidsd/orchidsd.github.io.git" main</span></span></code></pre>
+<p>三个问题一眼可见：</p>
+<ol>
+<li><strong>Node 版本分裂</strong>（20 vs 22），两处依赖安装方式分裂（<code>--no-save</code> vs <code>npm ci</code>）</li>
+<li><strong>重复部署</strong>：friend-check 的 check job 跑完会把 <code>link.yml</code> push 回源码仓库 main——而 <code>deploy.yml</code> 的触发路径恰好含 <code>source/**</code>！也就是说 <strong>friend-check 一旦改了 link.yml，deploy.yml 本来就会自动触发构建部署</strong>，deploy job 是完全冗余的第二次构建</li>
+<li><strong>两套凭证</strong>：PAT 和 SSH deploy key 并存，密钥管理面翻倍</li>
+</ol>
+<h3 id="12-挖出隐性依赖js-yaml-不在-packagejson">1.2 挖出隐性依赖：js-yaml 不在 package.json</h3>
+<p><code>friend-check/friend-check.js</code> 里有这么一行：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> yaml</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'js-yaml'</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>但 <code>package.json</code> 的 dependencies 里<strong>根本没有 js-yaml</strong>。CI 里 <code>npm install --no-save js-yaml</code> 就是给这个洞打的补丁——本地能跑是因为 node_modules 里恰好有（被某个主题依赖传递安装），换台机器就崩。这是典型的<strong>传递依赖侥幸可用</strong>：运行时直接 require 的包必须进正式依赖。</p>
+<p>修复：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#9ECBFF">"dependencies"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">  "..."</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"..."</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "js-yaml"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"^4.1.0"</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>然后 <code>npm install --package-lock-only</code> 同步 lockfile（<code>npm ci</code> 要求 lock 与 package.json 一致，否则 CI 直接失败）。</p>
+<h3 id="13-收敛后的-friend-checkyml">1.3 收敛后的 friend-check.yml</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Friend Check &amp; Deploy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  schedule</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    - </span><span style="color:#85E89D">cron</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'0 4 * * *'</span></span>
+<span class="line"><span style="color:#85E89D">  workflow_dispatch</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">permissions</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  contents</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">write</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  check</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup Node</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'22'</span><span style="color:#6A737D">     # ← 与 deploy.yml 对齐</span></span>
+<span class="line"><span style="color:#85E89D">          cache</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'npm'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm ci</span><span style="color:#6A737D">              # ← 替代 --no-save hack</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run friend check</span></span>
+<span class="line"><span style="color:#85E89D">        id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">check</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          node friend-check/friend-check.js</span></span>
+<span class="line"><span style="color:#9ECBFF">          if [ -n "$(git status --porcelain source/_data/link.yml friend-check/state.json)" ]; then</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "changed=true" &gt;&gt; "$GITHUB_OUTPUT"</span></span>
+<span class="line"><span style="color:#9ECBFF">          else</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "changed=false" &gt;&gt; "$GITHUB_OUTPUT"</span></span>
+<span class="line"><span style="color:#9ECBFF">          fi</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Commit and push classified friends</span></span>
+<span class="line"><span style="color:#85E89D">        if</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">steps.check.outputs.changed == 'true'</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.name "friend-check[bot]"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config user.email "friend-check[bot]@users.noreply.github.com"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git add source/_data/link.yml friend-check/state.json</span></span>
+<span class="line"><span style="color:#9ECBFF">          git commit -m "chore: auto-classify friends by availability"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git push</span></span></code></pre>
+<p><strong>整个 deploy job 删除</strong>。部署职责全部归 <code>deploy.yml</code>：friend-check push 分类结果 → deploy.yml 侦测到 <code>source/**</code> 变化 → SSH key 构建上线。一条链、一个凭证、一次构建。</p>
+<blockquote>
+<p><strong>排查方法</strong>：发现「两个 workflow 都在部署」时，先看每个 job 的<strong>输出是否又会触发另一个 workflow 的触发条件</strong>（push 回 main + paths 匹配）。命中即冗余，删。</p>
+</blockquote>
+<p><strong>预期输出：</strong> friend-check 只保留 check job；每次 push 到 main 只触发一次 Deploy Site。</p>
+<hr>
+<h2 id="part-2lighthouse-门禁收紧warn-不是门禁">Part 2：Lighthouse 门禁收紧——warn 不是门禁</h2>
+<p><code>lighthouserc.json</code> 原本四个断言全是 <code>warn</code>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#9ECBFF">"categories:performance"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.7</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:accessibility"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:best-practices"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:seo"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }]</span></span></code></pre>
+<p><code>warn</code> 的语义是「超标只标黄，不阻断」——换句话说，<strong>没有任何 CI 失败是因为性能/无障碍/SEO 不达标</strong>。门禁的意义是拦住不合格的变更，warn 拦不住。</p>
+<p>基线已经跑了一周（第⑨篇的建议：首次接入用 warn 观察），四类指标稳定达标，直接收紧：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#9ECBFF">"categories:performance"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"error"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.7</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:accessibility"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"error"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:best-practices"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"error"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#9ECBFF">"categories:seo"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"error"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }]</span></span></code></pre>
+<blockquote>
+<p><strong>预期输出：</strong> 任一指标跌破阈值 → Quality Checks 红灯阻断，Lighthouse 报告 URL 可查明细。</p>
+</blockquote>
+<hr>
+<h2 id="part-3worker-渠道清理下线-webdav">Part 3：Worker 渠道清理——下线 webdav</h2>
+<p>图片上传 Worker（<code>workers/waline-image-upload/</code>）支持 6 个上传渠道，其中 webdav 早已没有实际用途。用户确认后清理三处：</p>
+<ol>
+<li><strong><code>wrangler.toml</code></strong>：<code>ALLOWED_UPLOAD_CHANNELS</code> 从 6 个渠道去掉 <code>webdav</code></li>
+<li><strong><code>src/index.js</code></strong>：<code>CHANNEL_MAX_UPLOAD_BYTES</code> 删除 webdav 的限额条目</li>
+<li><strong>前端 <code>source/js/waline-image-uploader.js</code></strong>：<code>CHANNEL_LABELS</code> 删除 webdav 显示名</li>
+</ol>
+<p>前端的设计恰好让清理很干净：<strong>渠道列表是运行时从 <code>GET /channels</code> 动态拉取的</strong>（后端以 <code>ALLOWED_UPLOAD_CHANNELS</code> 为唯一事实源），前端只维护「渠道名 → 显示名」的映射，不硬编码渠道集合。所以删掉映射和配置后，访客端弹窗自然只剩 5 个渠道，不需要改选择逻辑。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">npx</span><span style="color:#9ECBFF"> wrangler</span><span style="color:#9ECBFF"> deploy</span></span></code></pre>
+<p><strong>预期输出：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#6A737D">// GET https://upload.weiguang.eu.org/channels</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span><span style="color:#79B8FF">"channels"</span><span style="color:#E1E4E8">:[</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#79B8FF">"name"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"telegram"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">"maxUploadBytes"</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">20971520</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#79B8FF">"name"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"cfr2"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">"maxUploadBytes"</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">104857600</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#79B8FF">"name"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"s3"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">"maxUploadBytes"</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">104857600</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#79B8FF">"name"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"discord"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">"maxUploadBytes"</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">10485760</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#E1E4E8">  {</span><span style="color:#79B8FF">"name"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"huggingface"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">"maxUploadBytes"</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">20971520</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span><span style="color:#79B8FF">"default"</span><span style="color:#E1E4E8">:</span><span style="color:#9ECBFF">"discord"</span><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>⚠️ 记得带 <code>Origin: https://blog.weiguang.eu.org</code> 请求头，否则 Worker 的 CORS 校验会拒绝（403「来源不受允许」是预期行为，不是故障）。</p>
+</blockquote>
+<hr>
+<h2 id="part-4评论图片放大双-bug一对镜像">Part 4：评论图片放大双 Bug——一对镜像</h2>
+<p>这是本次最有意思的部分：<strong>两个 Bug 症状完全相反，根因却同源</strong>——主题的 fancybox 只挂在「文章正文」上，评论区是第三方异步渲染的独立世界。</p>
+<h3 id="41-bug-awaline-评论区图片点不动没接-fancybox">4.1 Bug A：Waline 评论区图片点不动（没接 fancybox）</h3>
+<p><strong>症状：</strong> 文章正文图片点击可放大（主题 fancybox 生效），Waline 评论区里的图片点击没有任何反应。</p>
+<p><strong>根因：</strong> 主题的图片放大逻辑只绑定 <code>#article-container img</code>（正文容器），而 Waline 评论渲染在 <code>#waline-wrap</code>，是懒加载 + 异步渲染的独立容器，评论图片天然拿不到 <code>data-fancybox</code>。</p>
+<p><strong>修复（<code>waline.pug</code>）：</strong> 加一个 <code>bindWalineLightbox()</code>，用 MutationObserver 监听评论区的异步渲染，把 <code>.wl-content</code> 里的图片（排除表情 <code>wl-emoji</code>、排除已被包进链接的）逐个挂上 fancybox：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#B392F0"> bindWalineLightbox</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> wrap</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'waline-wrap'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">wrap </span><span style="color:#F97583">||</span><span style="color:#F97583"> typeof</span><span style="color:#E1E4E8"> anzhiyu </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'undefined'</span><span style="color:#F97583"> ||</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">anzhiyu.loadLightbox) </span><span style="color:#F97583">return</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#B392F0"> apply</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    wrap.</span><span style="color:#B392F0">querySelectorAll</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'.wl-content img:not(.wl-emoji)'</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">forEach</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">img</span><span style="color:#F97583"> =&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (img.parentNode.tagName </span><span style="color:#F97583">!==</span><span style="color:#9ECBFF"> 'A'</span><span style="color:#E1E4E8">) anzhiyu.</span><span style="color:#B392F0">loadLightbox</span><span style="color:#E1E4E8">([img])</span></span>
+<span class="line"><span style="color:#E1E4E8">    })</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#B392F0">  apply</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">  new</span><span style="color:#B392F0"> MutationObserver</span><span style="color:#E1E4E8">(apply).</span><span style="color:#B392F0">observe</span><span style="color:#E1E4E8">(wrap, { childList: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">, subtree: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> })</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>初始化 Waline 后调用一次 <code>bindWalineLightbox()</code> 即可，后续评论翻页/提交新评论由 MutationObserver 兜底。</p>
+<blockquote>
+<p>⚠️ <strong>坑</strong>：不要写 <code>window.anzhiyu</code> 判断——anzhiyu 主题的 <code>anzhiyu</code> 对象是<strong>顶层 const，不挂在 window 上</strong>，<code>window.anzhiyu</code> 恒为 <code>undefined</code>，守卫会永远早退导致修复失效。用 <code>typeof anzhiyu === 'undefined'</code> 才是对的。</p>
+</blockquote>
+<h3 id="42-bug-btwikoo-评论图片放大两次服务端-lightbox--主题-fancybox-叠加">4.2 Bug B：Twikoo 评论图片放大两次（服务端 lightbox × 主题 fancybox 叠加）</h3>
+<p><strong>症状：</strong> Twikoo 评论区点击图片，放大一层后底下还叠着一层暗色遮罩，关一层还有一层。</p>
+<p><strong>根因排查链路（重点）：</strong></p>
+<ol>
+<li>确认主题行为：<code>onCommentLoaded</code> 回调里给 <code>.tk-content img</code> 挂 fancybox——主题侧逻辑没毛病</li>
+<li>那多出来的一层是什么？打开 DevTools 看 DOM：存在一个 z-index 999 的 <code>.tk-lightbox</code> 容器</li>
+<li><strong>查 Twikoo 服务端配置</strong>：<code>serverConfig.LIGHTBOX === 'true'</code>——Twikoo 1.6.44 起<strong>内置了 lightbox</strong>（<code>popupLightbox</code>），服务端开关一旦打开，评论图片自带放大</li>
+<li>结论：<strong>服务端 lightbox 放大了一次，主题 fancybox 又放大一次</strong>，两个弹层叠加</li>
+</ol>
+<p><strong>修复（<code>twikoo.pug</code>）：</strong> 运行时探测服务端配置，内置 lightbox 开启时不再挂 fancybox，否则主题兜底：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#B392F0">onCommentLoaded</span><span style="color:#E1E4E8">: () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> v</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">getElementById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'twikoo'</span><span style="color:#E1E4E8">)?.__vue__</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> twikooLightbox</span><span style="color:#F97583"> =</span><span style="color:#F97583"> !!</span><span style="color:#E1E4E8">(v </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> v.$twikoo </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> v.$twikoo.serverConfig </span><span style="color:#F97583">&amp;&amp;</span><span style="color:#E1E4E8"> v.$twikoo.serverConfig.</span><span style="color:#79B8FF">LIGHTBOX</span><span style="color:#F97583"> ===</span><span style="color:#9ECBFF"> 'true'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">twikooLightbox) anzhiyu.</span><span style="color:#B392F0">loadLightbox</span><span style="color:#E1E4E8">(document.</span><span style="color:#B392F0">querySelectorAll</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'#twikoo .tk-content img:not(.tk-owo-emotion)'</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>⚠️ <strong>坑</strong>：初始化容器写的是 <code>#twikoo-wrap</code>，但 Twikoo 挂载后会把外层替换成 <code>#twikoo</code>（Vue mount replace），所以探测要用 <code>#twikoo</code>。空对象访问链要写满守卫（<code>?.</code> + <code>&amp;&amp;</code>），<code>__vue__</code> 拿不到时优雅跳过。</p>
+</blockquote>
+<h3 id="43-方法论沉淀改评论服务端配置前先想前端行为">4.3 方法论沉淀：改评论服务端配置前，先想前端行为</h3>
+<p>两个 Bug 是<strong>同一个教训的两面</strong>：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Bug A（Waline）</th>
+<th>Bug B（Twikoo）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>症状</td>
+<td>评论图片<strong>没有</strong>放大</td>
+<td>评论图片<strong>放大两次</strong></td>
+</tr>
+<tr>
+<td>根因</td>
+<td>主题 fancybox 只绑正文容器，没覆盖评论区</td>
+<td>服务端内置 lightbox + 主题 fancybox <strong>叠加</strong></td>
+</tr>
+<tr>
+<td>解法</td>
+<td>MutationObserver 给评论区补挂 fancybox</td>
+<td>探测服务端配置，开启则主题让位</td>
+</tr>
+</tbody>
+</table>
+<p><strong>沉淀成一条铁律：评论/第三方组件的「服务端配置」和「主题前端行为」是耦合的，改任何一边之前必须先在浏览器实测另一边。</strong> 服务端开个 LIGHTBOX 开关、升级一次组件版本，都可能和主题的 onCommentLoaded 钩子撞车。别把「双弹层」当新 Bug 排查半天——先看服务端配置再动代码。</p>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = 本轮维护收敛完成。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>npm ci</code> 后 <code>node friend-check/friend-check.js</code> 正常跑通（js-yaml 从正式依赖加载）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> push 到 main 只触发一次 Deploy Site（friend-check 不再重复构建）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>curl -H "Origin: https://blog.weiguang.eu.org" https://upload.weiguang.eu.org/channels</code> 返回 5 渠道、无 webdav</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 部署产物 <code>public/js/waline-image-uploader.js</code> 与线上文件均无 webdav 字样</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Waline 评论区初始评论、异步追加评论图片均能点击放大，无 JS 报错</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Twikoo 服务端 <code>LIGHTBOX=true</code> 时评论图片单层放大，主题不再叠加 fancybox</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 三层验证走完：源码 push 对齐 → 产物仓库 HEAD 更新 → <code>curl -sL</code> 线上特征确认</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm ci</code> 报 lock 与 package.json 不一致</td>
+<td>加了依赖没同步 lockfile</td>
+<td><code>npm install --package-lock-only</code> 后一起提交</td>
+</tr>
+<tr>
+<td>friend-check 改了 link.yml 却没触发部署</td>
+<td>依赖 deploy.yml 的 paths 未含 <code>source/**</code></td>
+<td>确认 deploy.yml 触发路径覆盖数据目录</td>
+</tr>
+<tr>
+<td><code>window.anzhiyu</code> 判断永远为 undefined</td>
+<td>anzhiyu 是顶层 const 不挂 window</td>
+<td>改用 <code>typeof anzhiyu === 'undefined'</code></td>
+</tr>
+<tr>
+<td>评论图片放大后底下还有一层遮罩</td>
+<td>服务端 lightbox 与主题 fancybox 叠加</td>
+<td>运行时探测 <code>serverConfig.LIGHTBOX</code>，开启则主题让位</td>
+</tr>
+<tr>
+<td>访问 <code>/channels</code> 返回「来源不受允许」</td>
+<td>没带 Origin 头，CORS 校验拦截</td>
+<td>加 <code>Origin: https://blog.weiguang.eu.org</code> 请求头</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>一次集中维护做了四件事，每件都对应一类常见工程债：</p>
+<ol>
+<li><strong>CI 收敛</strong>：识别出「push 回 main 会触发 deploy.yml」这一隐性依赖，删掉冗余 deploy job，技术栈（Node 22 + <code>npm ci</code>）与凭证（SSH key）统一到一条链</li>
+<li><strong>依赖显式化</strong>：friend-check 直接用 js-yaml 却只靠传递依赖，补进 <code>package.json</code> 并同步 lockfile</li>
+<li><strong>门禁生效</strong>：Lighthouse 从 warn（不阻断）收紧为 error（真拦截），基线稳定后收严</li>
+<li><strong>评论双 Bug</strong>：Waline 图片没放大 = 主题 fancybox 没覆盖评论区，补 MutationObserver；Twikoo 放大两次 = 服务端 lightbox 与主题 fancybox 叠加，运行时探测让位</li>
+</ol>
+<p>最值钱的不是代码，是那条方法论：<strong>改服务端配置前先想前端行为，双弹层先查配置再动代码。</strong></p>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/09-quality-ci/">CI 质量门禁四道检查搭建实录</a>（Lighthouse 门禁的搭建背景）</li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/10-deploy-verify/">部署三层验证 SOP</a>（本轮所有改动上线验证的依据）</li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/waline-series/00-series-index/">Waline 评论图片上传系列</a>（Worker 渠道与上传链路的完整背景）</li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/writing-tutorial-methodology/" data-astro-cid-q4eo6rhm>← 优质教程博文怎么写？从 web.dev、DigitalOcean、freeCodeCamp 提炼的编写结构与流程</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/03-backend/"><!-- Primary Meta Tags --><title>后端部署：hexo-circle-of-friends（Vercel + fork）</title><meta name="description" content="部署 hexo-circle-of-friends 后端：fork 仓库、GitHub Actions 每 3 小时全量爬取友链文章、data.db 数据库、API 端点详解、error 字段的判定语义。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/07/31/friend-circle-series/03-backend/"><meta property="og:title" content="后端部署：hexo-circle-of-friends（Vercel + fork）"><meta property="og:description" content="部署 hexo-circle-of-friends 后端：fork 仓库、GitHub Actions 每 3 小时全量爬取友链文章、data.db 数据库、API 端点详解、error 字段的判定语义。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>后端部署：hexo-circle-of-friends（Vercel + fork）</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-07-31T00:30:00.000Z" data-astro-cid-q4eo6rhm>2026-07-31</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="一后端在整个体系里的角色">一、后端在整个体系里的角色</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>友链页(/link/) ──► 后端爬虫抓取每篇友链的 RSS/Atom</span></span>
+<span class="line"><span>                    │</span></span>
+<span class="line"><span>                    ▼</span></span>
+<span class="line"><span>              data.db（SQLite）</span></span>
+<span class="line"><span>                    │</span></span>
+<span class="line"><span>                    ▼</span></span>
+<span class="line"><span>        API：/all /friend /post /randompost ...</span></span>
+<span class="line"><span>                    │</span></span>
+<span class="line"><span>        ┌───────────┴────────────┐</span></span>
+<span class="line"><span>        ▼                         ▼</span></span>
+<span class="line"><span>   朋友圈页(文章流)            失联检测(friend-check)</span></span></code></pre>
+<p><strong>核心职责</strong>：</p>
+<ol>
+<li>定期抓取每个友链的最新文章</li>
+<li>提供只读 API 供前端消费</li>
+<li>判定友链是否「失联」（抓不到文章）——这是整套自动化的判定源</li>
+</ol>
+<h2 id="二fork-仓库">二、fork 仓库</h2>
+<p>上游：<code>https://github.com/hexo-circle-of-friends/hexo-circle-of-friends</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. GitHub 上 fork 到自己的账号（本文以 orchidsd 为例）</span></span>
+<span class="line"><span style="color:#6A737D"># 2. 克隆到本地</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> clone</span><span style="color:#9ECBFF"> https://github.com/orchidsd/hexo-circle-of-friends.git</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> hexo-circle-of-friends</span></span></code></pre>
+<p>项目结构（关键部分）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>├── api/            # Rust API 层（axum）</span></span>
+<span class="line"><span>├── core/           # 核心逻辑（爬虫、DB、设置）</span></span>
+<span class="line"><span>├── data/           # 数据目录</span></span>
+<span class="line"><span>├── api_dependence/ # API 依赖</span></span>
+<span class="line"><span>└── .github/workflows/</span></span>
+<span class="line"><span>    └── CI.yml      # 定时爬取 + 提交 data.db</span></span></code></pre>
+<h2 id="三定时爬取ciyml">三、定时爬取（CI.yml）</h2>
+<p>后端靠 GitHub Actions <strong>定时全量重爬</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">CI</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  schedule</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    - </span><span style="color:#85E89D">cron</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'0 0,6,12,18,21 * * *'</span><span style="color:#6A737D">   # 每天 0/6/12/18/21 点</span></span>
+<span class="line"><span style="color:#85E89D">  workflow_dispatch</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  build</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#6A737D">      # ... 构建后端二进制 ...</span></span>
+<span class="line"><span style="color:#6A737D">      # ... 运行爬虫，抓取友链页所有友链的 RSS ...</span></span>
+<span class="line"><span style="color:#6A737D">      # ... 更新 data.db ...</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Commit data.db</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          git add data/data.db</span></span>
+<span class="line"><span style="color:#9ECBFF">          git commit -m "update data"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git push</span></span></code></pre>
+<p><strong>每次 push <code>data.db</code> → Vercel 自动重新部署 → API 数据更新。</strong></p>
+<blockquote>
+<p>⚠️ 爬虫抓取的是<strong>友链页在线渲染出的 HTML</strong>（<code>.cf-friends-link</code> 等 class）。所以友链页模板缺属性 → 后端抓不到友链（第 ① 篇修复的就是这个）。</p>
+</blockquote>
+<h2 id="四数据链路从友链页到-api">四、数据链路：从友链页到 API</h2>
+<ol>
+<li>Actions 里运行后端二进制，<strong>访问你的友链页 URL</strong></li>
+<li>用 CSS 选择器（<code>.cf-friends-link</code>、<code>.cf-friends-avatar</code>、<code>.cf-friends-name</code>）提取友链：名字、头像、链接</li>
+<li>依次请求每个友链的 <code>atom.xml</code> / <code>rss.xml</code>（找不到 feed 就解析主页 HTML 取 <code>&lt;title&gt;</code>）</li>
+<li>抓到文章 → 写入 <code>data.db</code>；<strong>抓不到关键字段（title）→ 该友链 error=1</strong></li>
+</ol>
+<h3 id="error-字段的判定语义重要">error 字段的判定语义（重要）</h3>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>能抓取到 RSS 文章</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>网站活着但 feed 结构异常/拿不到 title</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>网站完全不可达</td>
+<td><code>1</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>所以 <code>error=1</code> 表示 <strong>“朋友圈拿不到你的文章”</strong>，不只是“域名挂了”。</p>
+</blockquote>
+<h2 id="五部署到-vercel">五、部署到 Vercel</h2>
+<p>fork 自带 Vercel 配置（<code>vercel.json</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "buildCommand"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"cargo build --release"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "outputDirectory"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">""</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">  "rewrites"</span><span style="color:#E1E4E8">: [</span><span style="color:#FDAEB7;font-style:italic">...</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>在 Vercel 控制台：</p>
+<ol>
+<li><strong>Add New Project</strong> → 选择 fork 的仓库</li>
+<li>Framework Preset：Other</li>
+<li>构建命令：<code>cargo build --release</code>（或仓库自带脚本）</li>
+<li>输出目录：根目录（API 是 Rust 服务，由 <code>vercel.json</code> 的 rewrites 把 <code>/*</code> 指向二进制）</li>
+<li>Deploy</li>
+</ol>
+<p>部署后域名形如 <code>https://&lt;project&gt;.vercel.app</code>。</p>
+<h2 id="六api-端点一览">六、API 端点一览</h2>
+<table>
+<thead>
+<tr>
+<th>端点</th>
+<th>说明</th>
+<th>关键字段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/all</code></td>
+<td>聚合数据</td>
+<td><code>article_data</code>、<code>statistical_data</code></td>
+</tr>
+<tr>
+<td><code>/all</code> 的 <code>statistical_data</code></td>
+<td>统计</td>
+<td><code>friends_num</code>、<code>active_num</code>、<strong><code>error_num</code></strong>、<code>article_num</code>、<code>last_updated_time</code></td>
+</tr>
+<tr>
+<td><code>/friend</code></td>
+<td>友链数组</td>
+<td>每项含 <code>name</code> / <code>link</code> / <code>avatar</code> / <strong><code>error</code></strong> / <code>createdAt</code></td>
+</tr>
+<tr>
+<td><code>/post</code></td>
+<td>文章列表</td>
+<td>标题、链接、时间</td>
+</tr>
+<tr>
+<td><code>/randompost</code></td>
+<td>随机一篇文章</td>
+<td>用于“钓鱼”</td>
+</tr>
+<tr>
+<td><code>/randomfriend</code></td>
+<td>随机一个友链</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>/summary</code></td>
+<td>摘要</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>/version</code></td>
+<td>版本</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>/docs</code></td>
+<td>Swagger UI</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>所有接口返回 JSON，且带 <code>Access-Control-Allow-Origin: *</code>（前端跨域直接可读）。</p>
+<h2 id="七验证后端是否工作">七、验证后端是否工作</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 统计</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#9ECBFF"> https://fc.weiguang.eu.org/all</span></span>
+<span class="line"><span style="color:#6A737D"># 期望: {"friends_num":11,"active_num":11,"error_num":0,"article_num":11,"last_updated_time":"..."}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 友链数组（含 error 字段）</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#9ECBFF"> https://fc.weiguang.eu.org/friend</span></span>
+<span class="line"><span style="color:#6A737D"># 期望: [{"name":"...","link":"...","avatar":"...","error":false,...}]</span></span></code></pre>
+<p><strong>排错口诀</strong>：</p>
+<ul>
+<li><code>friends_num</code> 少 → 友链页模板缺 <code>.cf-*</code> 属性（回第 ① 篇）</li>
+<li><code>error_num</code> 多 → 对应友链抓不到文章，打开友链页逐个验证（真实失联 / feed 异常 / 重定向丢路径，见第 ⑥ 篇）</li>
+<li>API 超时 → Vercel 部署失败，查 Vercel 日志</li>
+</ul>
+<h2 id="八数据更新频率">八、数据更新频率</h2>
+<ul>
+<li>爬虫：每 3 小时一次（cron <code>0 0,6,12,18,21</code>）</li>
+<li>也可以手动：仓库 Actions → CI → <strong>Run workflow</strong> 立即触发一次</li>
+<li>Vercel 在 <code>data.db</code> 提交后自动重新部署，约 1 分钟内生效</li>
+</ul>
+<blockquote>
+<p>下一篇：有了后端 error 判定，如何实现友链的每日自动检测与自动部署。</p>
+</blockquote>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/31/friend-circle-series/02-fcircle-page/" data-astro-cid-q4eo6rhm>← 朋友圈（FriendCircle）页面搭建</a><a class="next" href="/2026/07/31/friend-circle-series/04-auto-detect-deploy/" data-astro-cid-q4eo6rhm>友链自动检测与自动部署（GitHub Actions） →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/09-quality-ci/"><!-- Primary Meta Tags --><title>Hexo anzhiyu 主题深度定制系列（九）：CI 质量门禁四道检查搭建实录</title><meta name="description" content="一个 quality.yml 挂四道检查：构建、Gitleaks 泄漏扫描、Lighthouse 性能审计、内部链接死链检测，全部压进 push 流程，让「上线即翻车」成为过去式。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/09-quality-ci/"><meta property="og:title" content="Hexo anzhiyu 主题深度定制系列（九）：CI 质量门禁四道检查搭建实录"><meta property="og:description" content="一个 quality.yml 挂四道检查：构建、Gitleaks 泄漏扫描、Lighthouse 性能审计、内部链接死链检测，全部压进 push 流程，让「上线即翻车」成为过去式。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（九）：CI 质量门禁四道检查搭建实录</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T04:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头push-成功--上线成功">开头：push 成功 ≠ 上线成功</h2>
+<p>过去发布流程是：<code>git push</code> → 看 Actions 绿了 → 完事。直到某天线上出现一片 404（footer 协议链接指向不存在的页面）、某次配置里混进 API key、某篇博文性能分掉到 0.5——<strong>构建绿 ≠ 质量好</strong>，push 这个动作本身什么也保证不了。</p>
+<p>本文记录如何用一个 <code>quality.yml</code> 挂起 <strong>四道质量门禁</strong>：构建通过、无密钥泄漏、性能达标、无死链，让 CI 替你做发布前体检。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：push 一次代码，GitHub Actions 自动跑 4 个 job，任一失败即标红，<strong>构建产物还共享给后续 job 复用</strong>（不重复构建）。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 仓库已配好 <code>deploy.yml</code>（构建部署流）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Node 22 + npm（CI 环境）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 有 <code>tools/</code> 目录放检查脚本</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>多 job 并行 + artifact 传递的 CI 编排</li>
+<li>Gitleaks 泄漏扫描接入</li>
+<li>Lighthouse CI 静态站审计</li>
+<li>自写死链检查器 + 设计决策（为什么只查站内）</li>
+</ol>
+<hr>
+<h2 id="step-1骨架build-job--artifact-共享">Step 1：骨架：build job + artifact 共享</h2>
+<blockquote>
+<p>目的：先有一个能产出 public 产物的构建 job，其他 job 从它「下载」而不是各自重构建。做完这步 Actions 里出现「Build site」。</p>
+</blockquote>
+<p><strong>操作：</strong> 新建 <code>.github/workflows/quality.yml</code>，先写触发条件 + build job：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Quality Checks</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">    paths</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'source/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'themes/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'scripts/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'patches/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'scaffolds/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'_config.yml'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'_config.anzhiyu.yml'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'sitemap-template.xml'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'package.json'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'package-lock.json'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'hexo-offline.config.cjs'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'lighthouserc.json'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'workers/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'tools/**'</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">'.github/workflows/**'</span></span>
+<span class="line"><span style="color:#85E89D">  workflow_dispatch</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">permissions</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  contents</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">read</span></span>
+<span class="line"><span style="color:#85E89D">  pull-requests</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">write</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  build</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Build site</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup Node.js</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          node-version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">22</span></span>
+<span class="line"><span style="color:#85E89D">          cache</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npm ci</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Generate site</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">npx hexo clean &amp;&amp; npx hexo generate</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Upload generated site</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/upload-artifact@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">generated-site</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">public</span></span>
+<span class="line"><span style="color:#85E89D">          retention-days</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">7</span></span></code></pre>
+<p><strong>预期输出：</strong> push 后 Quality Checks → Build site 绿色，Artifacts 里出现 <code>generated-site</code>（保留 7 天）。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：触发路径 <code>paths</code> 一定不能漏掉 <code>tools/**</code>（检查脚本改了不触发的话，CI 还跑旧脚本）；<code>npm ci</code> 需要 <code>package-lock.json</code>，别用 <code>npm install</code>。</p>
+</blockquote>
+<hr>
+<h2 id="step-2secrets-jobgitleaks-泄漏扫描">Step 2：secrets job：Gitleaks 泄漏扫描</h2>
+<blockquote>
+<p>目的：任何 push 都扫描一次仓库明文凭据。做完这步 Scan for secrets 上线。</p>
+</blockquote>
+<p><strong>操作：</strong> build job 之后并列添加：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">  secrets</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Scan for secrets</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          fetch-depth</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run Gitleaks</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">gitleaks/gitleaks-action@v2</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          config-path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">.gitleaks.toml</span></span>
+<span class="line"><span style="color:#85E89D">        env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          GITHUB_TOKEN</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.GITHUB_TOKEN }}</span></span></code></pre>
+<blockquote>
+<p>需要一份 <code>.gitleaks.toml</code> 豁免公共 key 的细节，见本系列第⑧篇《API Key 安全注入与 Gitleaks 泄漏扫描修复实录》。</p>
+</blockquote>
+<p><strong>预期输出：</strong> Scan for secrets 通过；仓库里若混入 key 立即红。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：默认配置会扫全历史（<code>fetch-depth: 1</code> 只查最新）；公共 key（如 IndexNow 公钥、主题自带 key）必须进 allowlist，否则天天误报。</p>
+</blockquote>
+<hr>
+<h2 id="step-3lighthouse-job性能无障碍seo-审计">Step 3：lighthouse job：性能/无障碍/SEO 审计</h2>
+<blockquote>
+<p>目的：静态产物直接跑 Lighthouse，四类指标设阈值，不合格标黄/标红。做完这步 Lighthouse audit 上线。</p>
+</blockquote>
+<p><strong>操作：</strong> 新建 <code>lighthouserc.json</code>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "ci"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "collect"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "staticDistDir"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"./public"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">      "numberOfRuns"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "assert"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "assertions"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "categories:performance"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.7</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#79B8FF">        "categories:accessibility"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#79B8FF">        "categories:best-practices"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }],</span></span>
+<span class="line"><span style="color:#79B8FF">        "categories:seo"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"warn"</span><span style="color:#E1E4E8">, { </span><span style="color:#79B8FF">"minScore"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8"> }]</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "upload"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">      "target"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"temporary-public-storage"</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>job 里下载 build 产物再审计（<code>needs: build</code>）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">  lighthouse</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Lighthouse audit</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">build</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Download generated site</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/download-artifact@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">generated-site</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">public</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run Lighthouse CI</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">treosh/lighthouse-ci-action@v12</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          configPath</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'./lighthouserc.json'</span></span>
+<span class="line"><span style="color:#85E89D">          uploadArtifacts</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span></span></code></pre>
+<p><strong>预期输出：</strong> Lighthouse audit 报告可在线查看（temporary-public-storage 会给出 URL），性能 ≥0.7、其余 ≥0.9 达标。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：Lighthouse 走 <code>staticDistDir</code> 时静态站默认路由 <code>/?path=/</code>，如果首页依赖 JS 渲染可能分低，先确认基线；阈值用 <code>warn</code>（黄）还是 <code>error</code>（红）按需调，首次接入建议 warn 观察一周。</p>
+</blockquote>
+<hr>
+<h2 id="step-4broken-links-job自写死链检查器">Step 4：broken-links job：自写死链检查器</h2>
+<blockquote>
+<p>目的：站内链接（href/src）全部指向真实存在的产物文件，缺失即红。做完这步 Check internal links 上线。</p>
+</blockquote>
+<p><strong>操作：</strong> 新建 <code>tools/check-internal-links.js</code>（核心思路）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#6A737D">// 内部链接检查：扫描 public 目录下所有 .html 中的站内链接（href/src），</span></span>
+<span class="line"><span style="color:#6A737D">// 确认目标文件存在于构建产物中，缺失即报错退出（供 CI 使用）。</span></span>
+<span class="line"><span style="color:#6A737D">//</span></span>
+<span class="line"><span style="color:#6A737D">// 设计决策：</span></span>
+<span class="line"><span style="color:#6A737D">// - 只查站内链接（/ 开头绝对路径、相对路径），外部 URL / CDN 不查，</span></span>
+<span class="line"><span style="color:#6A737D">//   规避外链 403/限流导致的假阳性。</span></span>
+<span class="line"><span style="color:#6A737D">// - 支持 hexo 的 /path/（目录 index.html）与 /path（.html 或目录）两种形态。</span></span>
+<span class="line"><span style="color:#6A737D">// - 中文/编码链接先 decodeURIComponent 再匹配文件。</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> fs</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"fs"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> path</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"path"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> ROOT</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(__dirname, </span><span style="color:#9ECBFF">".."</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"public"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> HTML_EXT</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> ".html"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> walk</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">dir</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">out</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> ent</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> fs.</span><span style="color:#B392F0">readdirSync</span><span style="color:#E1E4E8">(dir, { withFileTypes: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> })) {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> full</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(dir, ent.name);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (ent.</span><span style="color:#B392F0">isDirectory</span><span style="color:#E1E4E8">()) </span><span style="color:#B392F0">walk</span><span style="color:#E1E4E8">(full, out);</span></span>
+<span class="line"><span style="color:#F97583">    else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (ent.name.</span><span style="color:#B392F0">endsWith</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">HTML_EXT</span><span style="color:#E1E4E8">)) out.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(full);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> out;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> resolveTarget</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">baseFile</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">rawUrl</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> clean</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> rawUrl.</span><span style="color:#B392F0">split</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"#"</span><span style="color:#E1E4E8">)[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">].</span><span style="color:#B392F0">split</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"?"</span><span style="color:#E1E4E8">)[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">clean) </span><span style="color:#F97583">return</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> decoded;</span></span>
+<span class="line"><span style="color:#F97583">  try</span><span style="color:#E1E4E8"> { decoded </span><span style="color:#F97583">=</span><span style="color:#B392F0"> decodeURIComponent</span><span style="color:#E1E4E8">(clean); } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> { decoded </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> clean; }</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (decoded.</span><span style="color:#B392F0">startsWith</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/"</span><span style="color:#E1E4E8">)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ROOT</span><span style="color:#E1E4E8">, decoded);</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(path.</span><span style="color:#B392F0">dirname</span><span style="color:#E1E4E8">(baseFile), decoded);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> existsAs</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">target</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (fs.</span><span style="color:#B392F0">existsSync</span><span style="color:#E1E4E8">(target)) </span><span style="color:#F97583">return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (fs.</span><span style="color:#B392F0">existsSync</span><span style="color:#E1E4E8">(target </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> HTML_EXT</span><span style="color:#E1E4E8">)) </span><span style="color:#F97583">return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  if</span><span style="color:#E1E4E8"> (fs.</span><span style="color:#B392F0">existsSync</span><span style="color:#E1E4E8">(path.</span><span style="color:#B392F0">join</span><span style="color:#E1E4E8">(target, </span><span style="color:#9ECBFF">"index"</span><span style="color:#F97583"> +</span><span style="color:#79B8FF"> HTML_EXT</span><span style="color:#E1E4E8">))) </span><span style="color:#F97583">return</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> stripScripts</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">html</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> html.</span><span style="color:#B392F0">replace</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#DBEDFF">&lt;script</span><span style="color:#79B8FF">[\s\S]</span><span style="color:#F97583">*?</span><span style="color:#DBEDFF">&lt;</span><span style="color:#85E89D;font-weight:bold">\/</span><span style="color:#DBEDFF">script&gt;</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">gi</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">""</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">replace</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#DBEDFF">&lt;style</span><span style="color:#79B8FF">[\s\S]</span><span style="color:#F97583">*?</span><span style="color:#DBEDFF">&lt;</span><span style="color:#85E89D;font-weight:bold">\/</span><span style="color:#DBEDFF">style&gt;</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">gi</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">""</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> LINK_RE</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> /</span><span style="color:#DBEDFF">(?&lt;!</span><span style="color:#79B8FF">[\w-]</span><span style="color:#DBEDFF">)(?:href</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">src)</span><span style="color:#79B8FF">\s</span><span style="color:#F97583">*</span><span style="color:#DBEDFF">=</span><span style="color:#79B8FF">\s</span><span style="color:#F97583">*</span><span style="color:#79B8FF">["']</span><span style="color:#DBEDFF">(</span><span style="color:#79B8FF">[</span><span style="color:#F97583">^</span><span style="color:#79B8FF">"']</span><span style="color:#F97583">+</span><span style="color:#DBEDFF">)</span><span style="color:#79B8FF">["']</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">g</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> files</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> walk</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ROOT</span><span style="color:#E1E4E8">, []);</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> failures</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"><span style="color:#F97583">let</span><span style="color:#E1E4E8"> total </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> file</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> files) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> html</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> stripScripts</span><span style="color:#E1E4E8">(fs.</span><span style="color:#B392F0">readFileSync</span><span style="color:#E1E4E8">(file, </span><span style="color:#9ECBFF">"utf8"</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> m;</span></span>
+<span class="line"><span style="color:#79B8FF">  LINK_RE</span><span style="color:#E1E4E8">.lastIndex </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  while</span><span style="color:#E1E4E8"> ((m </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> LINK_RE</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">exec</span><span style="color:#E1E4E8">(html)) </span><span style="color:#F97583">!==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> url</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> m[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">      /</span><span style="color:#F97583">^</span><span style="color:#DBEDFF">(https</span><span style="color:#F97583">?</span><span style="color:#DBEDFF">:</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">mailto:</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">javascript:</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">data:</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">tel:</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">ftp:)</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">i</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">test</span><span style="color:#E1E4E8">(url) </span><span style="color:#F97583">||</span></span>
+<span class="line"><span style="color:#E1E4E8">      url.</span><span style="color:#B392F0">startsWith</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"//"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> url.</span><span style="color:#B392F0">startsWith</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"#"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span></span>
+<span class="line"><span style="color:#E1E4E8">      url </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> "undefined"</span><span style="color:#F97583"> ||</span></span>
+<span class="line"><span style="color:#9ECBFF">      /</span><span style="color:#85E89D;font-weight:bold">\.</span><span style="color:#DBEDFF">(md</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">mdx</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">yml</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">yaml</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">json</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">txt</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">pdf</span><span style="color:#F97583">|</span><span style="color:#DBEDFF">docx</span><span style="color:#F97583">?</span><span style="color:#DBEDFF">)</span><span style="color:#F97583">$</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">i</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">test</span><span style="color:#E1E4E8">(url)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> target</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> resolveTarget</span><span style="color:#E1E4E8">(file, url);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">target) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    total</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#B392F0">existsAs</span><span style="color:#E1E4E8">(target)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      failures.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`  ${</span><span style="color:#E1E4E8">path</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">relative</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">ROOT</span><span style="color:#9ECBFF">, </span><span style="color:#E1E4E8">file</span><span style="color:#9ECBFF">)</span><span style="color:#9ECBFF">} -&gt; "${</span><span style="color:#E1E4E8">url</span><span style="color:#9ECBFF">}" (${</span><span style="color:#E1E4E8">path</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">relative</span><span style="color:#9ECBFF">(</span><span style="color:#79B8FF">ROOT</span><span style="color:#9ECBFF">, </span><span style="color:#E1E4E8">target</span><span style="color:#9ECBFF">)</span><span style="color:#9ECBFF">} 不存在)`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (failures.</span><span style="color:#79B8FF">length</span><span style="color:#F97583"> &gt;</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`[check-internal-links] 发现 ${</span><span style="color:#E1E4E8">failures</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">length</span><span style="color:#9ECBFF">} 个失效内部链接（共检查 ${</span><span style="color:#E1E4E8">total</span><span style="color:#9ECBFF">} 个）：`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> f</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> failures) console.</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(f);</span></span>
+<span class="line"><span style="color:#E1E4E8">  process.</span><span style="color:#B392F0">exit</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`[check-internal-links] OK：${</span><span style="color:#E1E4E8">files</span><span style="color:#9ECBFF">.</span><span style="color:#79B8FF">length</span><span style="color:#9ECBFF">} 个 HTML，${</span><span style="color:#E1E4E8">total</span><span style="color:#9ECBFF">} 个内部链接全部可达`</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>job：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">  broken-links</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Check internal links</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">build</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Download generated site</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/download-artifact@v4</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">generated-site</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">public</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Run internal link checker</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">node tools/check-internal-links.js</span></span></code></pre>
+<p><strong>预期输出：</strong> 输出 <code>OK：N 个 HTML，M 个内部链接全部可达</code>；若某次改动引入死链，报错列出「哪个文件 → 哪个链接 → 缺哪个目标」。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>（都是实战踩过的坑）：</p>
+<ul>
+<li><code>onerror="src='undefined'"</code> 这类 JS 占位会误报，先过滤 <code>undefined</code></li>
+<li><code>data-href</code> / <code>data-src</code> 等属性误匹配，正则用 <code>(?&lt;![\w-])</code> 负向断言只匹配真正的 <code>href=</code>/<code>src=</code></li>
+<li>主题 JS 里 <code>fetch("/api/xxx")</code> 这类运行时路径不在产物里，务必先 <code>stripScripts</code> 去掉 <code>&lt;script&gt;</code> 块</li>
+<li><code>.md</code> 链接（GitHub 风格文档）不在产物里，统一跳过</li>
+<li>老版本还有过 <code>href</code> 命中的是元素属性名而非 URL，配合 decodeURIComponent 处理中文链接</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = 质量门禁就位。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> push 一次，Quality Checks 4 个 job 全部出现且跑完</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Build site 产物 <code>generated-site</code> 被 lighthouse / broken-links 复用（日志可见 download-artifact）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 故意在 footer 加一个不存在链接 → Check internal links 标红并报出精确位置</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Lighthouse 报告 URL 可访问，指标达标</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> Gitleaks 全绿（豁免配置已生效）</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>改了 tools/ 不触发 CI</td>
+<td>paths 漏了 <code>tools/**</code></td>
+<td>补进触发路径</td>
+</tr>
+<tr>
+<td>死链检查天天误报</td>
+<td>正则把 JS/外链当站内链接</td>
+<td>stripScripts + 负向断言 + 外链白名单</td>
+</tr>
+<tr>
+<td>Lighthouse 一直红</td>
+<td>阈值太严 / 基线未建</td>
+<td>先 <code>warn</code> 观察一周再收严</td>
+</tr>
+<tr>
+<td>job 并行各自构建</td>
+<td>没配 needs/download-artifact</td>
+<td>用 build 产物共享，别重复 <code>hexo generate</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>本文把「push 即体检」落地成 4 个并行 job：构建 → 泄漏扫描 → 性能审计 → 死链检测。核心要点：</p>
+<ol>
+<li><strong>产物共享</strong>：build job 产出 artifact，其余 job <code>needs: build</code> 下载，不重复构建</li>
+<li><strong>四条门禁互补</strong>：Gitleaks 管安全、Lighthouse 管体验、死链管完整性、build 管可编译</li>
+<li><strong>触发路径收窄</strong>：只跑相关目录，省 Actions 额度</li>
+<li><strong>检查器自研可控</strong>：死链检查 90 行搞定，设计决策都写在注释里</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/08-api-key-security/">上一篇：API Key 安全注入与 Gitleaks 泄漏扫描修复实录</a></li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/10-deploy-verify/">下一篇：部署三层验证 SOP</a></li>
+<li><a href="https://github.com/GoogleChrome/lighthouse-ci">Lighthouse CI 文档</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/08/09/hexo-anzhiyu-series/08-api-key-security/" data-astro-cid-q4eo6rhm>← Hexo anzhiyu 主题深度定制系列（八）：API Key 安全注入与 Gitleaks 泄漏扫描修复实录</a><a class="next" href="/2026/08/09/hexo-anzhiyu-series/10-deploy-verify/" data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（十）：部署三层验证 SOP →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>

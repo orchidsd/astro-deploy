@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="zh-CN" data-astro-cid-q4eo6rhm><head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Yokiの小站" href="https://astro.weiguang.eu.org/rss.xml"><meta name="generator" content="Astro v7.3.7"><style>@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/89758defcfa85239.woff") format("woff");font-display:swap;font-weight:400;font-style:normal;}@font-face{font-family:Atkinson-c7f4c4e8b285552f;src:url("/_astro/fonts/14aa8dd5744dd4bc.woff") format("woff");font-display:swap;font-weight:700;font-style:normal;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.3717%;ascent-override:80.1033%;descent-override:25.2587%;line-gap-override:0%;}@font-face{font-family:"Atkinson-c7f4c4e8b285552f fallback: Arial Bold";src:local("Arial Bold");font-display:swap;font-weight:700;font-style:normal;size-adjust:92.2954%;ascent-override:86.2448%;descent-override:27.1953%;line-gap-override:0%;}:root{--font-atkinson:Atkinson-c7f4c4e8b285552f,"Atkinson-c7f4c4e8b285552f fallback: Arial","Atkinson-c7f4c4e8b285552f fallback: Arial Bold",sans-serif;}</style><link rel="preload" href="/_astro/fonts/89758defcfa85239.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/_astro/fonts/14aa8dd5744dd4bc.woff" as="font" type="font/woff" crossorigin><script>
+	(() => {
+		const key = 'theme';
+		const saved = localStorage.getItem(key);
+		const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		document.documentElement.dataset.theme = theme;
+		document.addEventListener('astro:page-load', () => {
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾';
+		});
+	})();
+</script><!-- Canonical URL --><link rel="canonical" href="https://astro.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/07-toc-style/"><!-- Primary Meta Tags --><title>Hexo anzhiyu 主题深度定制系列（七）：侧边栏目录仿 anheyu 风格魔改实录</title><meta name="description" content="用 pug 模板 + stylus 样式 + patch 归档三步，把 anzhiyu 侧边栏目录改造成 blog.anheyu.com 风格：标题计数胶囊、blur 半透明非活跃态、主题色高亮指示条，并用 puppeteer 逐项对比验证。"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://astro.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/07-toc-style/"><meta property="og:title" content="Hexo anzhiyu 主题深度定制系列（七）：侧边栏目录仿 anheyu 风格魔改实录"><meta property="og:description" content="用 pug 模板 + stylus 样式 + patch 归档三步，把 anzhiyu 侧边栏目录改造成 blog.anheyu.com 风格：标题计数胶囊、blur 半透明非活跃态、主题色高亮指示条，并用 puppeteer 逐项对比验证。"><!-- Twitter --><meta name="twitter:card" content="summary"><style>:root{--accent:#425aef;--accent-dark:#2337ff;--black:20, 24, 34;--gray:100, 110, 130;--gray-light:232, 235, 242;--gray-dark:34, 41, 57;--gray-gradient:rgba(var(--gray-light), 50%), #fff;--bg:255, 255, 255;--box-shadow:0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}html[data-theme=dark]{--bg:18, 21, 30;--black:230, 234, 242;--gray:150, 158, 175;--gray-light:40, 46, 60;--gray-dark:214, 220, 232;--accent:#7b93ff;--gray-gradient:rgba(var(--gray-light), 50%), #13151b}body{font-family:var(--font-atkinson), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;text-align:left;background:rgb(var(--bg));background-image:linear-gradient(var(--gray-gradient)) no-repeat;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));-webkit-font-smoothing:antialiased;background-size:100% 600px;margin:0;padding:0;font-size:17px;line-height:1.9}#theme-toggle{cursor:pointer;background:0 0;border:none;font-size:1.1em}main{width:760px;max-width:calc(100% - 2em);margin:auto;padding:2em 1em 4em}h1,h2,h3,h4,h5,h6{color:rgb(var(--black));margin:1.5em 0 .6em;font-weight:700;line-height:1.35}h1{font-size:2.2em}h2{border-left:4px solid var(--accent);padding-left:.6em;font-size:1.6em}h3{font-size:1.3em}h4{font-size:1.1em}strong,b{font-weight:700}a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-dark);text-decoration:underline}p{margin:.8em 0}ul,ol{margin:.5em 0 1em;padding-left:1.6em}li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid rgb(var(--gray-light));text-align:left;padding:.5em .8em}img{border-radius:8px;max-width:100%;height:auto}code{background-color:rgb(var(--gray-light));border-radius:4px;padding:.15em .4em;font-family:SFMono-Regular,Consolas,Liberation Mono,monospace;font-size:.9em}pre{background:rgb(var(--gray-light));border-radius:8px;padding:1.2em 1.4em;font-size:.86em;line-height:1.6;overflow-x:auto}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);color:rgb(var(--gray));margin:1em 0;padding:0 0 0 20px}hr{border:none;border-top:1px solid rgb(var(--gray-light));margin:2em 0}.sr-only{clip:rect(1px, 1px, 1px, 1px);clip-path:inset(50%);white-space:nowrap;border:0;width:1px;height:1px;margin:0;padding:0;overflow:hidden;position:absolute!important}@media (width<=760px){body{font-size:16px}main{padding:1em 1em 3em}pre{font-size:.8em}}.footer[data-astro-cid-jo6i4kqk]{border-top:1px solid rgb(var(--gray-light));color:rgb(var(--gray));margin-top:4em;padding:3em 1em 2em;font-size:.9em}.links[data-astro-cid-jo6i4kqk]{flex-wrap:wrap;justify-content:center;gap:3em;max-width:900px;margin:0 auto;display:flex}.col[data-astro-cid-jo6i4kqk] h4[data-astro-cid-jo6i4kqk]{color:rgb(var(--black));margin:0 0 .6em}.col[data-astro-cid-jo6i4kqk] ul[data-astro-cid-jo6i4kqk]{columns:2;column-gap:1.5em;margin:0;padding:0;list-style:none}.col[data-astro-cid-jo6i4kqk] li[data-astro-cid-jo6i4kqk]{line-height:1.9}.copy[data-astro-cid-jo6i4kqk]{text-align:center;margin-top:2em}a[data-astro-cid-evkijfd6]{text-decoration:none;display:inline-block}a[data-astro-cid-evkijfd6].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-nen7h5rs]{box-shadow:0 2px 8px rgba(var(--black), 5%);background:#fff;margin:0;padding:0 1em}h2[data-astro-cid-nen7h5rs]{margin:0;font-size:1em}h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs],h2[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{text-decoration:none}nav[data-astro-cid-nen7h5rs]{justify-content:space-between;align-items:center;display:flex}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs]{color:var(--black);border-bottom:4px solid #0000;padding:1em .5em;text-decoration:none}nav[data-astro-cid-nen7h5rs] a[data-astro-cid-nen7h5rs].active{border-bottom-color:var(--accent);text-decoration:none}@media (width<=720px){nav[data-astro-cid-nen7h5rs]{flex-wrap:wrap}}#theme-toggle[data-astro-cid-nen7h5rs]{align-self:center}
+.post[data-astro-cid-q4eo6rhm]{width:800px}.post-head[data-astro-cid-q4eo6rhm]{border-bottom:1px solid rgb(var(--gray-light));margin-bottom:2em;padding-bottom:1em}.post-head[data-astro-cid-q4eo6rhm] h1[data-astro-cid-q4eo6rhm]{margin:0 0 .5em;font-size:1.9em}.post-meta[data-astro-cid-q4eo6rhm]{color:rgb(var(--gray));gap:1.5em;font-size:.9em;display:flex}.post-meta[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{margin-right:.5em}.content[data-astro-cid-q4eo6rhm]{line-height:1.9}.pager[data-astro-cid-q4eo6rhm]{border-top:1px solid rgb(var(--gray-light));justify-content:space-between;gap:1em;margin-top:3em;padding-top:1em;font-size:.9em;display:flex}.pager[data-astro-cid-q4eo6rhm] a[data-astro-cid-q4eo6rhm]{max-width:45%}.next[data-astro-cid-q4eo6rhm]{margin-left:auto}
+</style></head><body data-astro-cid-q4eo6rhm><header data-astro-cid-nen7h5rs><nav data-astro-cid-nen7h5rs><h2 data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Yokiの小站</a></h2><div class="internal-links" data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>首页</a><a href="/archives/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>归档</a><a href="/categories/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>分类</a><a href="/tags/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>标签</a><a href="/search/" data-astro-cid-nen7h5rs="true" data-astro-cid-evkijfd6>搜索</a><button id="theme-toggle" type="button" title="切换深浅色模式" aria-label="切换深浅色模式" data-astro-cid-nen7h5rs>☾</button></div></nav></header><script type="module">document.addEventListener(`astro:page-load`,()=>{let e=document.getElementById(`theme-toggle`);e&&(e.onclick=()=>{let t=document.documentElement,n=t.dataset.theme===`dark`?`light`:`dark`;t.dataset.theme=n,localStorage.setItem(`theme`,n),e.textContent=n===`dark`?`☀`:`☾`})});</script><main class="post" data-astro-cid-q4eo6rhm><article data-astro-cid-q4eo6rhm><header class="post-head" data-astro-cid-q4eo6rhm><h1 data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（七）：侧边栏目录仿 anheyu 风格魔改实录</h1><div class="post-meta" data-astro-cid-q4eo6rhm><time datetime="2026-08-09T02:00:00.000Z" data-astro-cid-q4eo6rhm>2026-08-09</time><span data-astro-cid-q4eo6rhm><a href="/categories/技术分享/" data-astro-cid-q4eo6rhm>技术分享</a></span></div></header><div class="content" data-astro-cid-q4eo6rhm><h2 id="开头一个照着抄却抄不赢的问题">开头：一个「照着抄却抄不赢」的问题</h2>
+<p>博客的侧边栏目录（TOC）一直是默认样式：只有当前项高亮，其他项平平无奇。看到 blog.anheyu.com 的目录——标题旁边带个<strong>标题计数胶囊</strong>，非当前项<strong>模糊半透明</strong>，鼠标滑过才聚焦，当前项<strong>主题色高亮 + 左侧指示条</strong>——一眼就想要。</p>
+<p>但直接照抄它的 CSS 是行不通的：那是 Next.js 重写的站点，DOM 结构完全不同，选择器一个都对不上。本文记录如何用主题原生 <code>card_post_toc.pug</code> + <code>sidebar.styl</code> 复刻这套效果，并跑通「魔改 → 验证 → patch 归档」的完整闭环。</p>
+<h2 id="目标声明--前置条件">目标声明 + 前置条件</h2>
+<p>本文带你完成：把 anzhiyu 侧边栏目录改造成 anheyu 风格（计数胶囊 + blur 非活跃态 + 主题色 active 高亮 + 细滚动条），并且<strong>升级主题时不会丢</strong>。</p>
+<p><strong>前置条件：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> Hexo + anzhiyu 主题（v1.7.1 实测通过）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 已掌握 patch 归档流程（本系列第④篇）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 本地可跑 <code>npx hexo s</code> 预览</li>
+</ul>
+<p><strong>你将学会：</strong></p>
+<ol>
+<li>用 pug 在模板里算标题数量</li>
+<li>stylus 里用主题变量实现 blur/高亮联动</li>
+<li>puppeteer-core 对比参考站样式逐项核对</li>
+<li>魔改后重新生成 patch 防升级丢失</li>
+</ol>
+<hr>
+<h2 id="step-1pug-模板加计数胶囊">Step 1：pug 模板加计数胶囊</h2>
+<blockquote>
+<p>目的：目录标题右侧显示文章标题总数。做完这一步刷新页面，标题栏右侧会出现一个数字胶囊。</p>
+</blockquote>
+<p><strong>操作：</strong> 改 <code>themes/anzhiyu/layout/includes/widget/card_post_toc.pug</code>。原模板只渲染标题文字，加三行：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="pug"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> tocSource </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> page.encrypt </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> true</span><span style="color:#F97583"> ?</span><span style="color:#E1E4E8"> page.origin </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> page.content</span></span>
+<span class="line"><span style="color:#E1E4E8">- </span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> tocCount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (tocSource.</span><span style="color:#B392F0">match</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">/</span><span style="color:#DBEDFF">&lt;h</span><span style="color:#79B8FF">[1-6][</span><span style="color:#F97583">^</span><span style="color:#79B8FF">&gt;]</span><span style="color:#F97583">*</span><span style="color:#9ECBFF">/</span><span style="color:#F97583">g</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">||</span><span style="color:#E1E4E8"> []).</span><span style="color:#79B8FF">length</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">#card-toc.card-widget</span></span>
+<span class="line"><span style="color:#B392F0">  .item-headline</span></span>
+<span class="line"><span style="color:#85E89D">    i</span><span style="color:#B392F0">.anzhiyufont.anzhiyu-icon-bars</span></span>
+<span class="line"><span style="color:#85E89D">    span</span><span style="color:#79B8FF">=</span><span style="color:#B392F0"> _p</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'aside.card_toc'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#85E89D">    span</span><span style="color:#B392F0">.toc-percentage</span><span style="color:#79B8FF">=</span><span style="color:#E1E4E8"> tocCount</span></span></code></pre>
+<p><strong>预期输出：</strong> 目录标题「文章目录」右侧出现圆角胶囊数字（如 <code>12</code>），数值 = 本文 h1-h6 标题总数。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：加密文章（<code>page.encrypt</code>）内容不在 <code>page.content</code> 里，必须取 <code>page.origin</code> 计算，否则数字恒为 0。</p>
+</blockquote>
+<hr>
+<h2 id="step-2styl-实现-anheyu-三态效果">Step 2：styl 实现 anheyu 三态效果</h2>
+<blockquote>
+<p>目的：非活跃项 blur(1px)+opacity 0.6，hover 恢复清晰，active 项主题色高亮 + 左侧 4px 指示条 + 6px 细滚动条。做完这步目录视觉已完全换样。</p>
+</blockquote>
+<p><strong>操作：</strong> 改 <code>themes/anzhiyu/source/css/_layout/sidebar.styl</code>，替换原 toc 段：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="styl"><code><span class="line"><span style="color:#6A737D">/* 文章toc — 仿 blog.anheyu.com 风格 */</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">-webkit-scrollbar { </span><span style="color:#79B8FF">width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">6</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">6</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">-webkit-scrollbar-track { </span><span style="color:#79B8FF">background</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">transparent</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">-webkit-scrollbar-thumb { </span><span style="color:#79B8FF">background</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-gray-op</span><span style="color:#E1E4E8">); </span><span style="color:#79B8FF">border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-percentage</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">block</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">float</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">none</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#79B8FF"> 0</span><span style="color:#79B8FF"> 0</span><span style="color:#79B8FF"> auto</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> 8</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">9999</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  background</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-gray-op</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">  color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-secondtext</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">  font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">12</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">font-style</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">normal</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1.5</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-link</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  position</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">relative</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">flex</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">align-items</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">center</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  line-height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1.5</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> 8</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> 8</span><span style="color:#F97583">px</span><span style="color:#79B8FF"> 16</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  border-left</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#79B8FF"> solid</span><span style="color:#79B8FF"> transparent</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-secondtext</span><span style="color:#E1E4E8">); </span><span style="color:#79B8FF">font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">14.4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  cursor</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">pointer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  transition</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">color</span><span style="color:#79B8FF"> .2</span><span style="color:#F97583">s</span><span style="color:#79B8FF"> ease-out</span><span style="color:#E1E4E8">, background-color </span><span style="color:#79B8FF">.2</span><span style="color:#F97583">s</span><span style="color:#79B8FF"> ease-out</span><span style="color:#E1E4E8">, font-size </span><span style="color:#79B8FF">.2</span><span style="color:#F97583">s</span><span style="color:#79B8FF"> ease-out</span><span style="color:#E1E4E8">, filter </span><span style="color:#79B8FF">.2</span><span style="color:#F97583">s</span><span style="color:#79B8FF"> ease-out</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">opacity</span><span style="color:#79B8FF"> .2</span><span style="color:#F97583">s</span><span style="color:#79B8FF"> ease-out</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-link:hover</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-main</span><span style="color:#E1E4E8">); </span><span style="color:#79B8FF">background-color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-main-op</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-link:not</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">.active</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">  opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0.6</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">filter</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">blur</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc:hover</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-link:not</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">.active</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">  filter</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">blur</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">); </span><span style="color:#79B8FF">opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-item.active</span><span style="color:#B392F0"> .toc-link</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  opacity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-main</span><span style="color:#E1E4E8">); </span><span style="color:#79B8FF">background-color</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-main-op</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">  font-weight</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">600</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">font-size</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">17.6</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">filter</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">blur</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">#aside-content</span><span style="color:#B392F0"> #card-toc</span><span style="color:#B392F0"> .toc-content</span><span style="color:#B392F0"> .toc-item.active</span><span style="color:#B392F0"> .toc-link::before</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">  content</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">""</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">position</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">absolute</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">left</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">6</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">top</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">50</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  transform</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">translateY</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">-50</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">  width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">60</span><span style="color:#F97583">%</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">border-radius</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">4</span><span style="color:#F97583">px</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#79B8FF">  background</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">var</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">--anzhiyu-main</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期输出：</strong></p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>非活跃项</td>
+<td>模糊 1px + 半透明 0.6，hover 恢复清晰</td>
+</tr>
+<tr>
+<td>活跃项</td>
+<td>主题色文字 + <code>main-op</code> 浅底 + 600 字重 + 放大到 17.6px</td>
+</tr>
+<tr>
+<td>活跃项指示条</td>
+<td>左侧 4px 主题色竖条</td>
+</tr>
+<tr>
+<td>滚动条</td>
+<td>6px 细滚动条，灰色圆角 thumb</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：如果 active 样式不生效，检查是不是还在用旧的 <code>.toc-link.active</code> 选择器——anzhiyu 渲染的是 <code>.toc-item.active .toc-link</code> 结构，两者都要覆盖。</p>
+</blockquote>
+<hr>
+<h2 id="step-3puppeteer-对比参考站逐项验证">Step 3：puppeteer 对比参考站逐项验证</h2>
+<blockquote>
+<p>目的：眼睛看可能有偏差，用 puppeteer-core 驱动浏览器读取两边 computed style 逐项比对。做完这步可以确认「真的是同一个效果」。</p>
+</blockquote>
+<p><strong>操作：</strong> 项目已装 <code>puppeteer-core</code>（<code>npm i -D puppeteer-core --no-save</code>，直接驱动本机 Edge）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="js"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> puppeteer</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> require</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"puppeteer-core"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">(</span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> browser</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> puppeteer.</span><span style="color:#B392F0">launch</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    executablePath: </span><span style="color:#9ECBFF">"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    headless: </span><span style="color:#9ECBFF">"new"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> page</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> browser.</span><span style="color:#B392F0">newPage</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">  await</span><span style="color:#E1E4E8"> page.</span><span style="color:#B392F0">goto</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"http://localhost:4000/posts/xxxx/"</span><span style="color:#E1E4E8">, { waitUntil: </span><span style="color:#9ECBFF">"networkidle0"</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> s</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> page.</span><span style="color:#B392F0">evaluate</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> el</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> document.</span><span style="color:#B392F0">querySelector</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"#card-toc .toc-item.active .toc-link"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> cs</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> getComputedStyle</span><span style="color:#E1E4E8">(el);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> { color: cs.color, fontSize: cs.fontSize, fontWeight: cs.fontWeight, filter: cs.filter };</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#E1E4E8">  console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">stringify</span><span style="color:#E1E4E8">(s, </span><span style="color:#79B8FF">null</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">  await</span><span style="color:#E1E4E8"> browser.</span><span style="color:#B392F0">close</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">})();</span></span></code></pre>
+<p><strong>预期输出：</strong> 本地站与参考站（blog.anheyu.com）两边的 <code>color / fontSize / fontWeight / filter / opacity</code> 数值一致（主题色不同除外）。</p>
+<blockquote>
+<p>⚠️ <strong>报错排查</strong>：headless 模式若启动失败，换 <code>headless: false</code> 带窗口跑；参考站是 Next.js，等待 <code>networkidle0</code> 时注意它可能有长轮询，加超时兜底。</p>
+</blockquote>
+<hr>
+<h2 id="step-4重新生成-patch-防升级丢失">Step 4：重新生成 patch 防升级丢失</h2>
+<blockquote>
+<p>目的：把两个文件的改动归档进 <code>patches/anzhiyu-customizations.patch</code>，升级主题后 <code>patch-package</code> 自动恢复。做完这步改动才算真正落地。</p>
+</blockquote>
+<p><strong>操作：</strong></p>
+<ol>
+<li>把新改的文件补进 <code>patches/generate-patch.ps1</code> 的 <code>$files</code> 列表：
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#E1E4E8">$files </span><span style="color:#F97583">=</span><span style="color:#F97583"> @</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">  ...</span></span>
+<span class="line"><span style="color:#9ECBFF">  "layout/includes/widget/card_post_toc.pug"</span><span style="color:#F97583">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  ...</span></span>
+<span class="line"><span style="color:#9ECBFF">  "source/css/_layout/sidebar.styl"</span><span style="color:#F97583">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  ...</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span></code></pre>
+</li>
+<li>重新生成 patch 并提交：
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#E1E4E8">.\patches\generate</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">patch.ps1     </span><span style="color:#6A737D"># 生成 patches/anzhiyu-customizations.patch</span></span>
+<span class="line"><span style="color:#E1E4E8">npx hexo </span><span style="color:#F97583">clean</span><span style="color:#E1E4E8"> &amp;&amp; npx hexo ge    </span><span style="color:#6A737D"># 确认构建无错</span></span>
+<span class="line"><span style="color:#E1E4E8">git add </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">A &amp;&amp; git commit </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">m </span><span style="color:#9ECBFF">"feat(主题): 侧边栏目录改仿 anheyu 风格"</span></span>
+<span class="line"><span style="color:#E1E4E8">git push</span></span></code></pre>
+</li>
+</ol>
+<p><strong>预期输出：</strong> patch 文件里出现 <code>card_post_toc.pug</code> 与 <code>sidebar.styl</code> 的 diff；CI Deploy 流程跑通，线上目录样式生效。</p>
+<hr>
+<h2 id="检查点验证整体效果">检查点：验证整体效果</h2>
+<blockquote>
+<p>全部勾选通过 = 魔改完成。</p>
+</blockquote>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" checked disabled> 目录标题右侧显示标题计数胶囊（数字 = 文章 h1-h6 数）</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 非活跃项 blur 1px + 0.6 透明度，hover 恢复</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 活跃项主题色高亮 + 左侧 4px 指示条</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 滚动条 6px 细条</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> <code>patches/anzhiyu-customizations.patch</code> 含本次改动</li>
+<li class="task-list-item"><input type="checkbox" checked disabled> 本地构建 0 错误、线上验证生效</li>
+</ul>
+<hr>
+<h2 id="常见问题faq">常见问题（FAQ）</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加密文章计数为 0</td>
+<td><code>page.content</code> 不含加密内容</td>
+<td>用 <code>page.origin</code> 计算</td>
+</tr>
+<tr>
+<td>active 样式不生效</td>
+<td>选择器写错层级</td>
+<td>用 <code>.toc-item.active .toc-link</code></td>
+</tr>
+<tr>
+<td>升级主题后样式没了</td>
+<td>没重新生成 patch</td>
+<td>改完必跑 <code>generate-patch.ps1</code></td>
+</tr>
+<tr>
+<td>参考站 CSS 抄不了</td>
+<td>DOM 结构不同</td>
+<td>按本文思路用主题类名重写，而非复制选择器</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="总结">总结</h2>
+<p>本文完成了目录卡片的完整魔改闭环：pug 计数 → styl 三态样式 → puppeteer 对照验证 → patch 归档。核心要点：</p>
+<ol>
+<li><strong>计算交给 pug</strong>：模板期算出标题数，零 JS 依赖</li>
+<li><strong>样式用主题变量</strong>：<code>--anzhiyu-main</code> 系列变量保证深浅色模式自适应</li>
+<li><strong>验证用工具</strong>：眼睛不可靠，computed style 才是唯一标准</li>
+<li><strong>归档必做</strong>：不重新生成 patch，下次升级全丢</li>
+</ol>
+<p><strong>延伸阅读：</strong></p>
+<ul>
+<li><a href="https://blog.weiguang.eu.org/2026/07/31/hexo-anzhiyu-series/04-theme-upgrade-patch/">上一篇：主题升级与 Patch 归档策略</a></li>
+<li><a href="https://blog.weiguang.eu.org/2026/08/09/hexo-anzhiyu-series/08-api-key-security/">下一篇：API Key 安全注入与 Gitleaks 修复实录</a></li>
+<li><a href="https://blog.anheyu.com">参考站 blog.anheyu.com</a></li>
+</ul>
+</div></article><nav class="pager" data-astro-cid-q4eo6rhm><a class="prev" href="/2026/07/31/hexo-anzhiyu-series/04-theme-upgrade-patch/" data-astro-cid-q4eo6rhm>← 安知鱼主题升级与 Patch 归档策略</a><a class="next" href="/2026/08/09/hexo-anzhiyu-series/08-api-key-security/" data-astro-cid-q4eo6rhm>Hexo anzhiyu 主题深度定制系列（八）：API Key 安全注入与 Gitleaks 泄漏扫描修复实录 →</a></nav></main><footer class="footer" data-astro-cid-jo6i4kqk><nav class="links" aria-label="页脚导航" data-astro-cid-jo6i4kqk><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>站点</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/" data-astro-cid-jo6i4kqk>首页</a></li><li data-astro-cid-jo6i4kqk><a href="/archives/" data-astro-cid-jo6i4kqk>归档</a></li><li data-astro-cid-jo6i4kqk><a href="/categories/" data-astro-cid-jo6i4kqk>分类</a></li><li data-astro-cid-jo6i4kqk><a href="/tags/" data-astro-cid-jo6i4kqk>标签</a></li><li data-astro-cid-jo6i4kqk><a href="/search/" data-astro-cid-jo6i4kqk>搜索</a></li></ul></div><div class="col" data-astro-cid-jo6i4kqk><h4 data-astro-cid-jo6i4kqk>页面</h4><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/about/" data-astro-cid-jo6i4kqk>关于</a></li><li data-astro-cid-jo6i4kqk><a href="/album/" data-astro-cid-jo6i4kqk>相册</a></li><li data-astro-cid-jo6i4kqk><a href="/fcircle/" data-astro-cid-jo6i4kqk>朋友圈</a></li><li data-astro-cid-jo6i4kqk><a href="/link/" data-astro-cid-jo6i4kqk>友链</a></li><li data-astro-cid-jo6i4kqk><a href="/music/" data-astro-cid-jo6i4kqk>音乐</a></li><li data-astro-cid-jo6i4kqk><a href="/essay/" data-astro-cid-jo6i4kqk>即刻短文</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>隐私</a></li><li data-astro-cid-jo6i4kqk><a href="/copyright/" data-astro-cid-jo6i4kqk>版权</a></li><li data-astro-cid-jo6i4kqk><a href="/cookies/" data-astro-cid-jo6i4kqk>Cookie</a></li></ul></div></nav><p class="copy" data-astro-cid-jo6i4kqk>&copy; 2026 Yoki · <a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></p></footer></body></html>
